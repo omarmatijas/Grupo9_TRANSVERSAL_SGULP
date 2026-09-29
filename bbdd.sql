@@ -5,7 +5,7 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `tp_final_grupo9`
 --
---DROP DATABASE IF EXISTS `tp_final_grupo9`;
+-- DROP DATABASE IF EXISTS `tp_final_grupo9`;
 CREATE DATABASE IF NOT EXISTS `tp_final_grupo9` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `tp_final_grupo9`;
 
