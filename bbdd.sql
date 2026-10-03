@@ -3,11 +3,11 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 --
--- Base de datos: `tp_final_grupo9`
+-- Base de datos: `grupo9_universidad`
 --
--- DROP DATABASE IF EXISTS `tp_final_grupo9`;
-CREATE DATABASE IF NOT EXISTS `tp_final_grupo9` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `tp_final_grupo9`;
+-- DROP DATABASE IF EXISTS `grupo9_universidad`;
+CREATE DATABASE IF NOT EXISTS `grupo9_universidad` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `grupo9_universidad`;
 
 -- --------------------------------------------------------
 
