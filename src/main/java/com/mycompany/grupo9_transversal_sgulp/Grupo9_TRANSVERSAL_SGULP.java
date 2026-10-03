@@ -34,7 +34,9 @@ public class Grupo9_TRANSVERSAL_SGULP {
             System.out.println("conected");
         } else {
             System.out.println("connection error");
+        }
     }
+
     public static void insertarAlumnosIniciales(AlumnoData alumnoData) throws SQLException {
         Alumno[] alumnos = new Alumno[]{
             new Alumno(34421846, "Franco Magallanes", Date.valueOf("1989-01-02"), true),
