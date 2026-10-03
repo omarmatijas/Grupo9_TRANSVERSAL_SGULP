@@ -17,7 +17,7 @@ USE `grupo9_universidad`;
 
 DROP TABLE IF EXISTS `alumno`;
 CREATE TABLE IF NOT EXISTS `alumno` (
-  `idAlumno` int(11) NOT NULL,
+  `idAlumno` int(11) NOT NULL AUTO_INCREMENT,
   `dni` int(11) DEFAULT NULL,
   `nombre` varchar(30) DEFAULT NULL,
   `fecNac` date DEFAULT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `alumno` (
 
 DROP TABLE IF EXISTS `cursada`;
 CREATE TABLE IF NOT EXISTS `cursada` (
-  `idCursada` int(11) NOT NULL,
+  `idCursada` int(11) NOT NULL AUTO_INCREMENT,
   `idAlumno` int(11) DEFAULT NULL,
   `idMateria` int(11) DEFAULT NULL,
   `nota` float DEFAULT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `cursada` (
 
 DROP TABLE IF EXISTS `materia`;
 CREATE TABLE IF NOT EXISTS `materia` (
-  `idMateria` int(11) NOT NULL,
+  `idMateria` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(20) DEFAULT NULL,
   `estado` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`idMateria`)
