@@ -8,17 +8,22 @@ import java.sql.Date;
 
 /**
  *
- * @author Jessi
+ * @author Grupo9
  */
 public class Alumno {
 
-    private int idAlumno;
+    private int idAlumno; //cuando se crea un alumno, no se tiene el id (lo dejamos en CERO)
     private int dni;
     private String nombre;
     private Date fecNac;
     private boolean activo;
 
     public Alumno() {
+    }
+
+    public Alumno(int dni, String nombre, Date fecNac, boolean activo) {
+        //cuando se crea un alumno, no se tiene el id (lo dejamos en CERO)
+        this(0, dni, nombre, fecNac, activo);
     }
 
     public Alumno(int idAlumno, int dni, String nombre, Date fecNac, boolean activo) {
