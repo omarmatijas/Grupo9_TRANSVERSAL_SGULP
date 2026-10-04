@@ -16,7 +16,7 @@ import java.sql.SQLException;
  */
 public class Grupo9_TRANSVERSAL_SGULP {
 
-    private static final String HOST = "localhost";
+     private static final String HOST = "localhost";
     private static final String PORT = "3307";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
@@ -29,11 +29,30 @@ public class Grupo9_TRANSVERSAL_SGULP {
                 USER,
                 PASSWORD
         );
-        Connection conn = conexion.buscarConexion();
-        if (conn != null) {
-            System.out.println("conected");
-        } else {
-            System.out.println("connection error");
+        try {
+            Connection conn = conexion.buscarConexion();
+            if (conn == null) {
+                throw new SQLException("Error de conexión: verifique usuario, contraseña, nombre de bbdd, host y puerto (tal vez alternar entre 3306 y 3307)");
+            }
+
+            verificarAlumnos(conn);
+            listarAlumnos(conn);
+        } finally {
+            conexion.cerrarConexion();
+        }
+    }
+
+    public static void listarAlumnos(Connection conn) throws SQLException {
+        AlumnoData alumnoData = new AlumnoData(conn);
+        for (Alumno alumno : alumnoData.listarAlumnos()) {
+            System.out.println(alumno);
+        }
+    }
+
+    public static void verificarAlumnos(Connection conn) throws SQLException {
+        AlumnoData alumnoData = new AlumnoData(conn);
+        if (alumnoData.ningunAlumno()) {
+            insertarAlumnosIniciales(alumnoData);
         }
     }
 
