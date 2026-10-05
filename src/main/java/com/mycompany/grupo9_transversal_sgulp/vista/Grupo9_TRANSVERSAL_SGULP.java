@@ -1,7 +1,7 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
-package com.mycompany.grupo9_transversal_sgulp;
+package com.mycompany.grupo9_transversal_sgulp.vista;
 
 import com.mycompany.grupo9_transversal_sgulp.modelo.Alumno;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.AlumnoData;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class Grupo9_TRANSVERSAL_SGULP {
 
      private static final String HOST = "localhost";
-    private static final String PORT = "3307";
+    private static final String PORT = "3306";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
     private static final String PASSWORD = "";
@@ -64,7 +64,7 @@ public class Grupo9_TRANSVERSAL_SGULP {
             new Alumno(30334915, "Omar Matijas", Date.valueOf("1983-07-06"), true)
         };
         for (Alumno alumno : alumnos) {
-            // alumnoData.insertarAlumno(alumno);
+            alumnoData.insertarAlumno(alumno);
         }
     }
 }
