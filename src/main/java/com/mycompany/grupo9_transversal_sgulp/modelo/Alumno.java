@@ -26,6 +26,10 @@ public class Alumno {
         this(0, dni, nombre, fecNac, activo);
     }
 
+    public Alumno(int dni, String nombre, Date fecNac) {
+        this(0, dni, nombre, fecNac, true);
+    }
+
     public Alumno(int idAlumno, int dni, String nombre, Date fecNac, boolean activo) {
         this.idAlumno = idAlumno;
         this.dni = dni;

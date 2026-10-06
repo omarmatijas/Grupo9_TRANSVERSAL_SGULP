@@ -6,7 +6,6 @@ package com.mycompany.grupo9_transversal_sgulp.vista;
 import com.mycompany.grupo9_transversal_sgulp.modelo.Alumno;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.AlumnoData;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.miConexion;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 
@@ -16,7 +15,7 @@ import java.sql.SQLException;
  */
 public class Grupo9_TRANSVERSAL_SGULP {
 
-     private static final String HOST = "localhost";
+    private static final String HOST = "localhost";
     private static final String PORT = "3306";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
@@ -29,14 +28,14 @@ public class Grupo9_TRANSVERSAL_SGULP {
                 USER,
                 PASSWORD
         );
-       try {
+        try {
             if (conexion.buscarConexion() == null) {
                 throw new SQLException("Error de conexión: verifique usuario, contraseña, nombre de bbdd, host y puerto (tal vez alternar entre 3306 y 3307)");
             }
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
             listarAlumnos(alumnoData);
-        }finally {
+        } finally {
             conexion.cerrarConexion();
         }
     }
@@ -55,10 +54,10 @@ public class Grupo9_TRANSVERSAL_SGULP {
 
     public static void insertarAlumnosIniciales(AlumnoData alumnoData) throws SQLException {
         Alumno[] alumnos = new Alumno[]{
-            new Alumno(34421846, "Franco Magallanes", Date.valueOf("1989-01-02"), true),
-            new Alumno(34877066, "Jessica Auriol", Date.valueOf("1989-10-20"), true),
-            new Alumno(35915707, "Gonzalo Exequiel Martin Asis", Date.valueOf("1991-06-10"), true),
-            new Alumno(30334915, "Omar Matijas", Date.valueOf("1983-07-06"), true)
+            new Alumno(34421846, "Franco Magallanes", Date.valueOf("1989-01-02")),
+            new Alumno(34877066, "Jessica Auriol", Date.valueOf("1989-10-20")),
+            new Alumno(35915707, "Gonzalo Exequiel Martin Asis", Date.valueOf("1991-06-10")),
+            new Alumno(30334915, "Omar Matijas", Date.valueOf("1983-07-06"))
         };
         for (Alumno alumno : alumnos) {
             alumnoData.insertarAlumno(alumno);
