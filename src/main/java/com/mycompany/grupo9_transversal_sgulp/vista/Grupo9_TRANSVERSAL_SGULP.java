@@ -29,28 +29,25 @@ public class Grupo9_TRANSVERSAL_SGULP {
                 USER,
                 PASSWORD
         );
-        try {
-            Connection conn = conexion.buscarConexion();
-            if (conn == null) {
+       try {
+            if (conexion.buscarConexion() == null) {
                 throw new SQLException("Error de conexión: verifique usuario, contraseña, nombre de bbdd, host y puerto (tal vez alternar entre 3306 y 3307)");
             }
-
-            verificarAlumnos(conn);
-            listarAlumnos(conn);
-        } finally {
+            AlumnoData alumnoData = new AlumnoData(conexion);
+            verificarAlumnos(alumnoData);
+            listarAlumnos(alumnoData);
+        }finally {
             conexion.cerrarConexion();
         }
     }
 
-    public static void listarAlumnos(Connection conn) throws SQLException {
-        AlumnoData alumnoData = new AlumnoData(conn);
+    public static void listarAlumnos(AlumnoData alumnoData) throws SQLException {
         for (Alumno alumno : alumnoData.listarAlumnos()) {
             System.out.println(alumno);
         }
     }
 
-    public static void verificarAlumnos(Connection conn) throws SQLException {
-        AlumnoData alumnoData = new AlumnoData(conn);
+    public static void verificarAlumnos(AlumnoData alumnoData) throws SQLException {
         if (alumnoData.ningunAlumno()) {
             insertarAlumnosIniciales(alumnoData);
         }

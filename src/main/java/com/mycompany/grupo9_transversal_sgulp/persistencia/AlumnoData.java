@@ -18,15 +18,24 @@ import java.util.List;
  * @author gonza
  */
 public class AlumnoData {
-     private final Connection conexion;
 
-    public AlumnoData(Connection conexion) {
+    private final miConexion conexion;
+
+    public AlumnoData(miConexion conexion) {
         this.conexion = conexion;
+    }
+
+    private Connection obtenerConexion() throws SQLException {
+        Connection con = conexion.buscarConexion();
+        if (con == null) {
+            throw new SQLException("No hay conexión con la base de datos");
+        }
+        return con;
     }
 
     public boolean ningunAlumno() throws SQLException {
         String sql = "SELECT COUNT(*) FROM alumno";
-        try (Statement st = conexion.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+        try (Statement st = obtenerConexion().createStatement(); ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 return rs.getInt(1) == 0;
             }
@@ -36,7 +45,7 @@ public class AlumnoData {
 
     public int insertarAlumno(Alumno alumno) throws SQLException {
         String sql = "INSERT INTO alumno (dni, nombre, fecNac, activo) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = obtenerConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, alumno.getDni());
             ps.setString(2, alumno.getNombre());
             ps.setDate(3, alumno.getFecNac());
@@ -72,7 +81,7 @@ public class AlumnoData {
     public List<Alumno> listarAlumnos() throws SQLException {
         List<Alumno> alumnos = new ArrayList<>();
         String sql = "SELECT idAlumno, dni, nombre, fecNac, activo FROM alumno";
-        try (Statement st = conexion.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+        try (Statement st = obtenerConexion().createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 alumnos.add(new Alumno(
                         rs.getInt("idAlumno"),
@@ -86,5 +95,3 @@ public class AlumnoData {
         return alumnos;
     }
 }
-
-
