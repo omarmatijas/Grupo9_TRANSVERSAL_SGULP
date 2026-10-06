@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+/**
+ *
+ * @author Grupo9
+ */
 public class MateriaData {
 
     private final miConexion conexion;

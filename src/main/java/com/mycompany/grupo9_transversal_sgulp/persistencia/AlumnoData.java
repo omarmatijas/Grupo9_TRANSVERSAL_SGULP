@@ -13,6 +13,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author Grupo9
+ */
 public class AlumnoData {
 
     private final miConexion conexion;

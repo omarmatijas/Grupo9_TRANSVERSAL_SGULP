@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author gonza
+ * @author Grupo9
  */
 public class miConexion {
     private final String url;
