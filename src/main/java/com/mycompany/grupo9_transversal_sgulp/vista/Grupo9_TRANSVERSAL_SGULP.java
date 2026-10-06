@@ -35,6 +35,13 @@ public class Grupo9_TRANSVERSAL_SGULP {
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
             listarAlumnos(alumnoData);
+            
+              Alumno encontrado = alumnoData.buscarAlumno(1);
+            if (encontrado != null) {
+                System.out.println("Alumno encontrado: " + encontrado);
+            } else {
+                System.out.println("No existe un alumno con ese id");
+            }
         } finally {
             conexion.cerrarConexion();
         }
