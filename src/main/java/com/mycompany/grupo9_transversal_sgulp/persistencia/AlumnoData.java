@@ -90,4 +90,23 @@ public class AlumnoData {
         }
         return alumnos;
     }
+    
+    public Alumno buscarAlumno(int idAlumno) throws SQLException {
+        String sql = "SELECT idAlumno, dni, nombre, fecNac, activo FROM alumno WHERE idAlumno = ?";
+        try (PreparedStatement ps = obtenerConexion().prepareStatement(sql)) {
+            ps.setInt(1, idAlumno);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Alumno(
+                            rs.getInt("idAlumno"),
+                            rs.getInt("dni"),
+                            rs.getString("nombre"),
+                            rs.getDate("fecNac"),
+                            rs.getBoolean("activo")
+                    );
+                }
+                return null;
+            }
+        }
+    }
 }
