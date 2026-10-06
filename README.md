@@ -71,13 +71,15 @@ alumno (1) ──< cursada >── (1) materia
 ### Resultado esperado
 
 Al ejecutar, el programa se conecta a la base, ingresa a los integrantes del grupo
-(solo si la tabla `alumno` está vacía) y los muestra por consola:
+(solo si la tabla `alumno` está vacía), los muestra por consola y prueba la búsqueda
+de un alumno por id:
 
 ```
 Franco Magallanes (DNI 34421846)
 Jessica Auriol (DNI 34877066)
-Gonzalo Exequiel Martin (DNI 35915707)
+Gonzalo Exequiel Martin Asis (DNI 35915707)
 Omar Matijas (DNI 30334915)
+Alumno encontrado: Franco Magallanes (DNI 34421846)
 ```
 
 ---
