@@ -22,8 +22,9 @@ CREATE TABLE IF NOT EXISTS `alumno` (
   `dni` int(11) DEFAULT NULL,
   `nombre` varchar(30) DEFAULT NULL,
   `fecNac` date DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`idAlumno`)
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idAlumno`),
+  UNIQUE KEY `uk_alumno_dni` (`dni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
