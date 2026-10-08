@@ -35,12 +35,20 @@ public class Grupo9_TRANSVERSAL_SGULP {
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
             listarAlumnos(alumnoData);
-            
-              Alumno encontrado = alumnoData.buscarAlumno(1);
+
+            Alumno encontrado = alumnoData.buscarAlumno(1);
             if (encontrado != null) {
                 System.out.println("Alumno encontrado: " + encontrado);
             } else {
                 System.out.println("No existe un alumno con ese id");
+            }
+
+            int DNI = 30334915;
+            encontrado = alumnoData.buscarAlumnoPorDni(DNI);
+            if (encontrado != null) {
+                System.out.println("Alumno DNI encontrado: " + encontrado);
+            } else {
+                System.out.println("No existe un alumno con DNI " + DNI);
             }
         } finally {
             conexion.cerrarConexion();

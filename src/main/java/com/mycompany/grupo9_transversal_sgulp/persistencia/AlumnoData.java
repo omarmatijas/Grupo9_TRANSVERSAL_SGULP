@@ -75,31 +75,42 @@ public class AlumnoData {
         String sql = "SELECT idAlumno, dni, nombre, fecNac, activo FROM alumno";
         try (Statement st = conexion.buscarConexion().createStatement(); ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                alumnos.add(new Alumno(
-                        rs.getInt("idAlumno"),
-                        rs.getInt("dni"),
-                        rs.getString("nombre"),
-                        rs.getDate("fecNac"),
-                        rs.getBoolean("activo")
-                ));
+                alumnos.add(parsearRs(rs));
             }
         }
         return alumnos;
     }
-    
+
+    public Alumno buscarAlumnoPorDni(int dni) throws SQLException {
+        String sql = "SELECT idAlumno, dni, nombre, fecNac, activo FROM alumno WHERE dni = ?";
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
+            ps.setInt(1, dni);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return parsearRs(rs);
+                }
+                return null;
+            }
+        }
+    }
+
+    private static Alumno parsearRs(ResultSet rs) throws SQLException {
+        return new Alumno(
+                rs.getInt("idAlumno"),
+                rs.getInt("dni"),
+                rs.getString("nombre"),
+                rs.getDate("fecNac"),
+                rs.getBoolean("activo")
+        );
+    }
+
     public Alumno buscarAlumno(int idAlumno) throws SQLException {
         String sql = "SELECT idAlumno, dni, nombre, fecNac, activo FROM alumno WHERE idAlumno = ?";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idAlumno);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Alumno(
-                            rs.getInt("idAlumno"),
-                            rs.getInt("dni"),
-                            rs.getString("nombre"),
-                            rs.getDate("fecNac"),
-                            rs.getBoolean("activo")
-                    );
+                    return parsearRs(rs);
                 }
                 return null;
             }
