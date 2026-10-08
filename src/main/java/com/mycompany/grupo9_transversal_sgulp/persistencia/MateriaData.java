@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author Grupo9
@@ -64,4 +66,19 @@ public class MateriaData {
             }
         }
     }
+         public List<Materia> listarMaterias() throws SQLException {
+        List<Materia> materias = new ArrayList<>();
+        String sql = "SELECT idMateria, nombre, estado FROM materia";
+        try (Statement st = conexion.buscarConexion().createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                materias.add(new Materia(
+                        rs.getInt("idMateria"),
+                        rs.getString("nombre"),
+                        rs.getBoolean("estado")
+                ));
+            }
+        }
+        return materias;
+    } 
+    
 }
