@@ -18,17 +18,9 @@ public class MateriaData {
         this.conexion = conexion;
     }
 
-    private Connection obtenerConexion() throws SQLException {
-        Connection con = conexion.buscarConexion();
-        if (con == null) {
-            throw new SQLException("No hay conexión con la base de datos");
-        }
-        return con;
-    }
-
     public int insertarMateria(Materia materia) throws SQLException {
         String sql = "INSERT INTO materia (nombre, estado) VALUES (?, ?)";
-        try (PreparedStatement ps = obtenerConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, materia.getNombre());
             ps.setBoolean(2, materia.isEstado());
             int filas;
@@ -62,7 +54,7 @@ public class MateriaData {
 
     public Materia buscarMateria(int idMateria) throws SQLException {
         String sql = "SELECT idMateria, nombre, estado FROM materia WHERE idMateria = ?";
-        try (PreparedStatement ps = obtenerConexion().prepareStatement(sql)) {
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idMateria);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
