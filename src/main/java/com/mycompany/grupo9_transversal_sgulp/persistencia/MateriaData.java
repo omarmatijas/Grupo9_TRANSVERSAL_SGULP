@@ -51,7 +51,6 @@ public class MateriaData {
             materia.setIdMateria(idMateria);
             return idMateria;
         }
-
     }
 
     public Materia buscarMateria(int idMateria) throws SQLException {
@@ -66,7 +65,8 @@ public class MateriaData {
             }
         }
     }
-         public List<Materia> listarMaterias() throws SQLException {
+
+    public List<Materia> listarMaterias() throws SQLException {
         List<Materia> materias = new ArrayList<>();
         String sql = "SELECT idMateria, nombre, estado FROM materia";
         try (Statement st = conexion.buscarConexion().createStatement(); ResultSet rs = st.executeQuery(sql)) {
@@ -79,6 +79,5 @@ public class MateriaData {
             }
         }
         return materias;
-    } 
-    
+    }
 }
