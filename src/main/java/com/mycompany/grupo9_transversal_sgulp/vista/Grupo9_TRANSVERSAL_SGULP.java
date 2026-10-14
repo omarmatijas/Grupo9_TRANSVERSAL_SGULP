@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class Grupo9_TRANSVERSAL_SGULP {
 
     private static final String HOST = "localhost";
-    private static final String PORT = "3306";
+    private static final String PORT = "3307";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
     private static final String PASSWORD = "";
@@ -35,45 +35,80 @@ public class Grupo9_TRANSVERSAL_SGULP {
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
             listarAlumnos(alumnoData);
-
-            Alumno encontrado = alumnoData.buscarAlumno(1);
-            if (encontrado != null) {
-                System.out.println("Alumno encontrado: " + encontrado);
-            } else {
-                System.out.println("No existe un alumno con ese id");
-            }
-
-            int DNI = 30334915;
-            encontrado = alumnoData.buscarAlumnoPorDni(DNI);
-            if (encontrado != null) {
-                System.out.println("Alumno DNI encontrado: " + encontrado);
-            } else {
-                System.out.println("No existe un alumno con DNI " + DNI);
-            }
-            // Prueba A: actualizar un alumno que existe.
-            Alumno encontrado2 = alumnoData.buscarAlumnoPorDni(35915707);
-            if (encontrado2 != null) {
-                String nombreAnterior = encontrado2.getNombre();
-                encontrado2.setNombre("Pepe Argento");
-                alumnoData.actualizarAlumno(encontrado2);
-                Alumno actualizado = alumnoData.buscarAlumnoPorDni(35915707);
-                String nombreNuevo = actualizado.getNombre();
-                System.out.println("Se actualizo nombre de " + nombreAnterior + " a " + nombreNuevo);
-                actualizado.setNombre(nombreAnterior);
-                alumnoData.actualizarAlumno(actualizado);
-                System.out.println("Se actualizo nombre de " + nombreNuevo + " a " + nombreAnterior);
-            }
-            // Prueba B: actualizar un alumno que no existe
-            Alumno inexistente = new Alumno(999, 11111111, "Alumno Fantasma", Date.valueOf("2000-01-01"), true);
-            try {
-                alumnoData.actualizarAlumno(inexistente);
-                System.out.println("ERROR: se actualizó un alumno que no existe");
-            } catch (SQLException ex) {
-                System.out.println("OK, se detecto el error: " + ex.getMessage());
-            }
+            System.out.println("--------------------------------");
+            testAlumnoData(alumnoData);
+            System.out.println("--------**********---------");
+            listarAlumnos(alumnoData);
 
         } finally {
             conexion.cerrarConexion();
+        }
+    }
+
+    public static void testAlumnoData(AlumnoData alumnoData) throws SQLException {
+        Alumno encontrado = alumnoData.buscarAlumno(1);
+        if (encontrado != null) {
+            System.out.println("Alumno encontrado: " + encontrado);
+        } else {
+            System.out.println("No existe un alumno con ese id");
+        }
+
+        int DNI = 30334915;
+        encontrado = alumnoData.buscarAlumnoPorDni(DNI);
+        if (encontrado != null) {
+            System.out.println("Alumno DNI encontrado: " + encontrado);
+        } else {
+            System.out.println("No existe un alumno con DNI " + DNI);
+        }
+        // Prueba A: actualizar un alumno que existe.
+        Alumno encontrado2 = alumnoData.buscarAlumnoPorDni(35915707);
+        if (encontrado2 != null) {
+            String nombreAnterior = encontrado2.getNombre();
+            encontrado2.setNombre("Pepe Argento");
+            alumnoData.actualizarAlumno(encontrado2);
+            Alumno actualizado = alumnoData.buscarAlumnoPorDni(35915707);
+            String nombreNuevo = actualizado.getNombre();
+            System.out.println("Se actualizo nombre de " + nombreAnterior + " a " + nombreNuevo);
+            actualizado.setNombre(nombreAnterior);
+            alumnoData.actualizarAlumno(actualizado);
+            System.out.println("Se actualizo nombre de " + nombreNuevo + " a " + nombreAnterior);
+        }
+        // Prueba B: actualizar un alumno que no existe
+        Alumno inexistente = new Alumno(999, 11111111, "Alumno Fantasma", Date.valueOf("2000-01-01"), true);
+        try {
+            alumnoData.actualizarAlumno(inexistente);
+            System.out.println("ERROR: se actualizó un alumno que no existe");
+        } catch (SQLException ex) {
+            System.out.println("OK, se detecto el error: " + ex.getMessage());
+        }
+
+        // Prueba: baja lógica
+        Alumno paraBaja = alumnoData.buscarAlumnoPorDni(34877066);
+        if (paraBaja != null) {
+            alumnoData.bajaLogicaAlumno(paraBaja.getIdAlumno());
+            Alumno dadoDeBaja = alumnoData.buscarAlumno(paraBaja.getIdAlumno());
+            System.out.println("Baja lógica de " + dadoDeBaja + ", activo=" + dadoDeBaja.isActivo());
+        } else {
+            System.out.println("No existe el alumno para la baja lógica");
+        }
+
+        // Prueba: reactivación lógica
+        Alumno paraReactivar = alumnoData.buscarAlumnoPorDni(34877066);
+        if (paraReactivar != null) {
+            alumnoData.reactivacionLogicaAlumno(paraReactivar.getIdAlumno());
+            Alumno reactivado = alumnoData.buscarAlumno(paraReactivar.getIdAlumno());
+            System.out.println("Reactivación lógica de " + reactivado + ", activo=" + reactivado.isActivo());
+        } else {
+            System.out.println("No existe el alumno para la reactivación lógica");
+        }
+
+        int idBorrar = (int) (Math.random() * 10);
+        alumnoData.borrarAlumno(idBorrar, false, false);
+        Alumno borrado = alumnoData.buscarAlumno(idBorrar);
+        if (borrado == null) {
+            System.out.println("Se borró el alumno id= " + idBorrar);
+        } else {
+            System.out.println("ERROR: el alumno id= " + idBorrar + " sigue existiendo");
         }
     }
 

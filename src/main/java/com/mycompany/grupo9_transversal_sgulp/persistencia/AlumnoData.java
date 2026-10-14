@@ -19,6 +19,9 @@ import java.util.List;
  */
 public class AlumnoData {
 
+    /** SQLSTATE de violación de restricción de integridad (clave foránea, unique, etc.). */
+    private static final String SQLSTATE_VIOLACION_INTEGRIDAD = "23000";
+
     private final miConexion conexion;
 
     public AlumnoData(miConexion conexion) {
@@ -49,7 +52,7 @@ public class AlumnoData {
                 throw new SQLException("No se pudo crear el alumno", ex);
             }
             if (filas != 1) {
-                throw new SQLException("No se pudo crear el alumno");
+                throw new SQLException("No se pudo crear el alumno (bis)");
             }
 
             int idAlumno = 0;
@@ -63,7 +66,7 @@ public class AlumnoData {
                 throw new SQLException("No se pudo obtener el id generado del alumno", ex);
             }
             if (!hayId) {
-                throw new SQLException("No se pudo obtener el id generado del alumno");
+                throw new SQLException("No se pudo obtener el id generado del alumno (raro)");
             }
             alumno.setIdAlumno(idAlumno);
             return idAlumno;
@@ -83,6 +86,78 @@ public class AlumnoData {
             filas = ps.executeUpdate();
             if (filas != 1) {
                 throw new SQLException("No se pudo actualizar el alumno, el id= "+alumno.getIdAlumno()+" no existe");
+            }
+        }
+    }
+
+    public void borrarAlumno(int idAlumno, boolean cascade) throws SQLException {
+        borrarAlumno(idAlumno, cascade, true);
+    }
+
+    public void borrarAlumno(int idAlumno, boolean cascade, boolean checkIfExists) throws SQLException {
+        Connection conn = conexion.buscarConexion();
+        boolean autoCommitPrevio = conn.getAutoCommit();
+        try {
+            conn.setAutoCommit(false);
+            if (cascade) {
+                String sqlCursadas = "DELETE FROM cursada WHERE idAlumno = ?";
+                try (PreparedStatement ps = conn.prepareStatement(sqlCursadas)) {
+                    ps.setInt(1, idAlumno);
+                    ps.executeUpdate();
+                }
+            }
+            String sql = "DELETE FROM alumno WHERE idAlumno = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idAlumno);
+                int filas = ps.executeUpdate();
+                if (checkIfExists && filas != 1) {
+                    throw new SQLException("No se pudo borrar el alumno, el id= " + idAlumno + " no existe");
+                }
+            }
+            conn.commit();
+        } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                ex.addSuppressed(rollbackEx);
+            }
+            if (SQLSTATE_VIOLACION_INTEGRIDAD.equals(ex.getSQLState())) {
+                throw new SQLException("No se pudo borrar el alumno, el id= " + idAlumno + " tiene cursadas asociadas", ex);
+            }
+            throw ex;
+        } finally {
+            conn.setAutoCommit(autoCommitPrevio);
+        }
+    }
+
+    public void bajaLogicaAlumno(int idAlumno) throws SQLException {
+        cambiarActivo(idAlumno, false);
+    }
+
+    public void reactivacionLogicaAlumno(int idAlumno) throws SQLException {
+        cambiarActivo(idAlumno, true);
+    }
+
+    private void cambiarActivo(int idAlumno, boolean activo) throws SQLException {
+        Alumno alumno = buscarAlumno(idAlumno);
+        String accion = activo ? "reactivar" : "dar de baja";
+        if (alumno == null) {
+            throw new SQLException("No se pudo " + accion + " el alumno, el id= " + idAlumno + " no existe");
+        }
+        if (alumno.isActivo() == activo) {
+            /* El alumno ya está en el estado pedido; no se modifica.
+             String estado = activo ? "activo" : "inactivo";
+             throw new SQLException("No se pudo " + accion + " el alumno, el id= " + idAlumno + " ya está " + estado);
+            */
+           return;
+        }
+        String sql = "UPDATE alumno SET activo = ? WHERE idAlumno = ?";
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
+            ps.setBoolean(1, activo);
+            ps.setInt(2, idAlumno);
+            int filas = ps.executeUpdate();
+            if (filas != 1) {
+                throw new SQLException("No se pudo " + accion + " el alumno, el id= " + idAlumno + " no existe");
             }
         }
     }
