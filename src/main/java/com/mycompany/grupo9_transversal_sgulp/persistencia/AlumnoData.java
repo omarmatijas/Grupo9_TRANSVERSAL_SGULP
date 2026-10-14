@@ -70,6 +70,23 @@ public class AlumnoData {
         }
     }
 
+    public void actualizarAlumno(Alumno alumno) throws SQLException {
+        String sql = "UPDATE alumno SET dni = ?,nombre = ?,fecNac = ?,activo = ? WHERE idAlumno = ?";
+        
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
+            ps.setInt(1, alumno.getDni());
+            ps.setString(2, alumno.getNombre());
+            ps.setDate(3, alumno.getFecNac());
+            ps.setBoolean(4, alumno.isActivo());
+            ps.setInt(5, alumno.getIdAlumno());
+            int filas;
+            filas = ps.executeUpdate();
+            if (filas != 1) {
+                throw new SQLException("No se pudo actualizar el alumno, el id= "+alumno.getIdAlumno()+" no existe");
+            }
+        }
+    }
+
     public List<Alumno> listarAlumnos() throws SQLException {
         List<Alumno> alumnos = new ArrayList<>();
         String sql = "SELECT idAlumno, dni, nombre, fecNac, activo FROM alumno";

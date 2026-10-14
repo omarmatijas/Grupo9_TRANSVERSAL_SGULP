@@ -50,6 +50,28 @@ public class Grupo9_TRANSVERSAL_SGULP {
             } else {
                 System.out.println("No existe un alumno con DNI " + DNI);
             }
+            // Prueba A: actualizar un alumno que existe.
+            Alumno encontrado2 = alumnoData.buscarAlumnoPorDni(35915707);
+            if (encontrado2 != null) {
+                String nombreAnterior = encontrado2.getNombre();
+                encontrado2.setNombre("Pepe Argento");
+                alumnoData.actualizarAlumno(encontrado2);
+                Alumno actualizado = alumnoData.buscarAlumnoPorDni(35915707);
+                String nombreNuevo = actualizado.getNombre();
+                System.out.println("Se actualizo nombre de " + nombreAnterior + " a " + nombreNuevo);
+                actualizado.setNombre(nombreAnterior);
+                alumnoData.actualizarAlumno(actualizado);
+                System.out.println("Se actualizo nombre de " + nombreNuevo + " a " + nombreAnterior);
+            }
+            // Prueba B: actualizar un alumno que no existe
+            Alumno inexistente = new Alumno(999, 11111111, "Alumno Fantasma", Date.valueOf("2000-01-01"), true);
+            try {
+                alumnoData.actualizarAlumno(inexistente);
+                System.out.println("ERROR: se actualizó un alumno que no existe");
+            } catch (SQLException ex) {
+                System.out.println("OK, se detecto el error: " + ex.getMessage());
+            }
+
         } finally {
             conexion.cerrarConexion();
         }
