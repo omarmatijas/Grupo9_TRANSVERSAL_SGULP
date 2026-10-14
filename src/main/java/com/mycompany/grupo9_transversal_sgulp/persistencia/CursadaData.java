@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -186,10 +188,71 @@ public class CursadaData {
     }
     
     // actualizarNota
+    public void actualizarNta(int idAlumno, int idMateria, int anio, double nota){
+        String sql = "UPDATE cursada SET nota = ? WHERE idAlumno = ? AND idMateria = ? AND cursa = ?";
+        
+        try {
+            PreparedStatement ps =conexion.buscarConexion().prepareStatement(sql);
+            ps.setDouble(1, nota);
+            ps.setInt(2, idAlumno);
+            ps.setInt(3, idMateria);
+            ps.setInt(4, anio);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     // marcarAsistencia
+    public void marcarAsistencia(int idAlumno, int idMateria, int anio) {
+        String sql = "UPDATE cursada SET asist = asist + 1 "
+                + "WHERE idAlumno = ? AND idMateria = ? AND cursa = ? AND asist < ?";
+
+        try {
+            PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql);
+            ps.setInt(1, idAlumno);
+            ps.setInt(2, idMateria);
+            ps.setInt(3, anio);
+            int filas = ps.executeUpdate();
+            if (filas == 0) {
+                System.out.println("No se marcó asistencia (inscripción inexistente o ya tiene 30 clases)");
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     // listarCursadasPorAlumno
+    public List<Cursada> listarMateriasPorAlumno(int idAlumno) {
+        List<Cursada> cursadas = new ArrayList<>();
+        String sql = "SELECT c.idCursada, c.nota, c.asist, c.cursa, "
+                + "m.idMateria, m.nombre AS nombreMateria, m.estado "
+                + "FROM cursada c JOIN materia m ON c.idMateria = m.idMateria "
+                + "WHERE c.idAlumno = ?";
+
+        try {
+            PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql);
+            ps.setInt(1, idAlumno);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Materia m = new Materia(rs.getInt("idMateria"),
+                        rs.getString("nombreMateria"), rs.getBoolean("estado"));
+                Alumno a = new Alumno();
+                a.setIdAlumno(idAlumno);
+
+                Cursada c = new Cursada(rs.getInt("idCursada"), a, m,
+                        rs.getFloat("nota"), rs.getFloat("asist"), rs.getInt("cursa"));
+                cursadas.add(c);
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cursadas;
+    }
+    
     
     public Cursada parsearRS(ResultSet rs) throws SQLException {
         AlumnoData alumnoData = new AlumnoData(conexion);
