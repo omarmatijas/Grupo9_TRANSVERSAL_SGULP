@@ -82,6 +82,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
         gestionAlumnos = new javax.swing.JMenuItem();
         menuMaterias = new javax.swing.JMenu();
         gestionMaterias = new javax.swing.JMenuItem();
+        menuOpciones = new javax.swing.JMenu();
+        menuSalir = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SGULP - Universidad de la Punta");
@@ -112,6 +114,14 @@ public class MenuPrincipal extends javax.swing.JFrame {
         menuMaterias.add(gestionMaterias);
 
         menu.add(menuMaterias);
+
+        menuOpciones.setText("Opciones");
+
+        menuSalir.setText("Salir");
+        menuSalir.addActionListener(this::menuSalirActionPerformed);
+        menuOpciones.add(menuSalir);
+
+        menu.add(menuOpciones);
 
         setJMenuBar(menu);
 
@@ -145,6 +155,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
         mostrar(materiaVista);
     }//GEN-LAST:event_gestionMateriasActionPerformed
 
+    private void menuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSalirActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_menuSalirActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -177,5 +191,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenu menuAlumnos;
     private javax.swing.JMenu menuMaterias;
+    private javax.swing.JMenu menuOpciones;
+    private javax.swing.JMenuItem menuSalir;
     // End of variables declaration//GEN-END:variables
 }
