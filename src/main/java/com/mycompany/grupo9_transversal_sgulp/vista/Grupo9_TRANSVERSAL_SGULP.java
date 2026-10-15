@@ -39,9 +39,7 @@ public class Grupo9_TRANSVERSAL_SGULP {
             listarMaterias(materiaData);
             System.out.println("--------------------------------");
             testMateriaData(materiaData);
-            System.out.println("--------**********---------");
-            listarMaterias(materiaData);
-
+            System.out.println("--------------------------------");
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
             listarAlumnos(alumnoData);
@@ -125,17 +123,17 @@ public class Grupo9_TRANSVERSAL_SGULP {
     public static void testMateriaData(MateriaData materiaData) throws SQLException {
         Materia encontrada = materiaData.buscarMateria(1);
         if (encontrada != null) {
-        String nombreAnterior = encontrada.getNombre();
-        encontrada.setNombre("Base_de_datos");
-        materiaData.actualizarMateria(encontrada);
-        Materia actualizada = materiaData.buscarMateria(1);
-        String nombreNuevo = actualizada.getNombre();
-        System.out.println("Se actualizo nombre de " + nombreAnterior + " a " + nombreNuevo);
-        actualizada.setNombre(nombreAnterior);
-        materiaData.actualizarMateria(actualizada);
-        System.out.println("Se actualizo nombre de " + nombreNuevo + " a " + nombreAnterior);
-        }else{
-             System.out.println("No existe una materia con ese id");
+            String nombreAnterior = encontrada.getNombre();
+            encontrada.setNombre("Base_de_datos");
+            materiaData.actualizarMateria(encontrada);
+            Materia actualizada = materiaData.buscarMateria(1);
+            String nombreNuevo = actualizada.getNombre();
+            System.out.println("Se actualizo nombre de " + nombreAnterior + " a " + nombreNuevo);
+            actualizada.setNombre(nombreAnterior);
+            materiaData.actualizarMateria(actualizada);
+            System.out.println("Se actualizo nombre de " + nombreNuevo + " a " + nombreAnterior);
+        } else {
+            System.out.println("No existe una materia con ese id");
         }
         // Prueba B: actualizar una materia que no existe
         Materia inexistente = new Materia(999, "Materia Fantasma", true);
