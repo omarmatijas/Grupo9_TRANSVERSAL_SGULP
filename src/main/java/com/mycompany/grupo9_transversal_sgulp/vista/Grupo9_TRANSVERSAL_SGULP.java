@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class Grupo9_TRANSVERSAL_SGULP {
 
     private static final String HOST = "localhost";
-    private static final String PORT = "3307";
+    private static final String PORT = "3306";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
     private static final String PASSWORD = "";
@@ -39,6 +39,8 @@ public class Grupo9_TRANSVERSAL_SGULP {
             listarMaterias(materiaData);
             System.out.println("--------------------------------");
             testMateriaData(materiaData);
+            System.out.println("--------**********---------");
+            listarMaterias(materiaData);
             System.out.println("--------------------------------");
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
@@ -142,6 +144,35 @@ public class Grupo9_TRANSVERSAL_SGULP {
             System.out.println("ERROR: se aactualizó una materia que no existe");
         } catch (SQLException ex) {
             System.out.println("OK, se detecto el error: " + ex.getMessage());
+        }
+
+        // Prueba: baja lógica
+        Materia paraBaja = materiaData.buscarMateria(2);
+        if (paraBaja != null) {
+            materiaData.bajaLogicaMateria(paraBaja.getIdMateria());
+            Materia dadaDeBaja = materiaData.buscarMateria(paraBaja.getIdMateria());
+            System.out.println("Baja lógica de " + dadaDeBaja + ", estado=" + dadaDeBaja.isEstado());
+        } else {
+            System.out.println("No existe la materia para la baja lógica");
+        }
+
+        // Prueba: reactivación lógica
+        Materia paraReactivar = materiaData.buscarMateria(2);
+        if (paraReactivar != null) {
+            materiaData.reactivacionLogicaMateria(paraReactivar.getIdMateria());
+            Materia reactivada = materiaData.buscarMateria(paraReactivar.getIdMateria());
+            System.out.println("Reactivación lógica de " + reactivada + ", estado=" + reactivada.isEstado());
+        } else {
+            System.out.println("No existe la materia para la reactivación lógica");
+        }
+
+        int idBorrar = (int) (Math.random() * 10);
+        materiaData.borrarMateria(idBorrar, false, false);
+        Materia borrada = materiaData.buscarMateria(idBorrar);
+        if (borrada == null) {
+            System.out.println("Se borró la materia id= " + idBorrar);
+        } else {
+            System.out.println("ERROR: la materia id= " + idBorrar + " sigue existiendo");
         }
     }
 
