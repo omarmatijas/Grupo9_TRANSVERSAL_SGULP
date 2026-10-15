@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
  * @author Grupo9
@@ -18,6 +19,15 @@ public class MateriaData {
 
     public MateriaData(miConexion conexion) {
         this.conexion = conexion;
+    }
+        public boolean ningunaMateria() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM materia";
+        try (Statement st = conexion.buscarConexion().createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1) == 0;
+            }
+            return true;
+        }
     }
 
     public int insertarMateria(Materia materia) throws SQLException {
@@ -50,6 +60,20 @@ public class MateriaData {
             }
             materia.setIdMateria(idMateria);
             return idMateria;
+        }
+    }
+
+    public void actualizarMateria(Materia materia) throws SQLException {
+        String sql = "UPDATE materia SET nombre = ?,estado = ? WHERE idMateria = ?";
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
+            ps.setString(1, materia.getNombre());
+            ps.setBoolean(2, materia.isEstado());
+            ps.setInt(3, materia.getIdMateria());
+            int filas;
+            filas = ps.executeUpdate();
+            if (filas != 1) {
+                throw new SQLException("No se pudo actualizar la materia, el id= " + materia.getIdMateria() + " no existe");
+            }
         }
     }
 

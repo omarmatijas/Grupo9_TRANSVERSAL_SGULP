@@ -4,7 +4,9 @@
 package com.mycompany.grupo9_transversal_sgulp.vista;
 
 import com.mycompany.grupo9_transversal_sgulp.modelo.Alumno;
+import com.mycompany.grupo9_transversal_sgulp.modelo.Materia;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.AlumnoData;
+import com.mycompany.grupo9_transversal_sgulp.persistencia.MateriaData;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.miConexion;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -32,6 +34,14 @@ public class Grupo9_TRANSVERSAL_SGULP {
             if (conexion.buscarConexion() == null) {
                 throw new SQLException("Error de conexión: verifique usuario, contraseña, nombre de bbdd, host y puerto (tal vez alternar entre 3306 y 3307)");
             }
+            MateriaData materiaData = new MateriaData(conexion);
+            verificarMaterias(materiaData);
+            listarMaterias(materiaData);
+            System.out.println("--------------------------------");
+            testMateriaData(materiaData);
+            System.out.println("--------**********---------");
+            listarMaterias(materiaData);
+
             AlumnoData alumnoData = new AlumnoData(conexion);
             verificarAlumnos(alumnoData);
             listarAlumnos(alumnoData);
@@ -112,6 +122,31 @@ public class Grupo9_TRANSVERSAL_SGULP {
         }
     }
 
+    public static void testMateriaData(MateriaData materiaData) throws SQLException {
+        Materia encontrada = materiaData.buscarMateria(1);
+        if (encontrada != null) {
+        String nombreAnterior = encontrada.getNombre();
+        encontrada.setNombre("Base_de_datos");
+        materiaData.actualizarMateria(encontrada);
+        Materia actualizada = materiaData.buscarMateria(1);
+        String nombreNuevo = actualizada.getNombre();
+        System.out.println("Se actualizo nombre de " + nombreAnterior + " a " + nombreNuevo);
+        actualizada.setNombre(nombreAnterior);
+        materiaData.actualizarMateria(actualizada);
+        System.out.println("Se actualizo nombre de " + nombreNuevo + " a " + nombreAnterior);
+        }else{
+             System.out.println("No existe una materia con ese id");
+        }
+        // Prueba B: actualizar una materia que no existe
+        Materia inexistente = new Materia(999, "Materia Fantasma", true);
+        try {
+            materiaData.actualizarMateria(inexistente);
+            System.out.println("ERROR: se aactualizó una materia que no existe");
+        } catch (SQLException ex) {
+            System.out.println("OK, se detecto el error: " + ex.getMessage());
+        }
+    }
+
     public static void listarAlumnos(AlumnoData alumnoData) throws SQLException {
         for (Alumno alumno : alumnoData.listarAlumnos()) {
             System.out.println(alumno);
@@ -135,4 +170,27 @@ public class Grupo9_TRANSVERSAL_SGULP {
             alumnoData.insertarAlumno(alumno);
         }
     }
+
+    public static void listarMaterias(MateriaData materiaData) throws SQLException {
+        for (Materia materia : materiaData.listarMaterias()) {
+            System.out.println(materia);
+        }
+    }
+
+    public static void verificarMaterias(MateriaData materiaData) throws SQLException {
+        if (materiaData.ningunaMateria()) {
+            insertarMateriasIniciales(materiaData);
+        }
+    }
+
+    public static void insertarMateriasIniciales(MateriaData materiaData) throws SQLException {
+        Materia[] materias = new Materia[]{
+            new Materia("Laboratorio", true),
+            new Materia("Web_1", true)
+        };
+        for (Materia materia : materias) {
+            materiaData.insertarMateria(materia);
+        }
+    }
+
 }
