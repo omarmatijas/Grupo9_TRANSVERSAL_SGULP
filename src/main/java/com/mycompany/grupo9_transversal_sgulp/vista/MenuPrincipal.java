@@ -4,22 +4,67 @@
  */
 package com.mycompany.grupo9_transversal_sgulp.vista;
 
+import com.mycompany.grupo9_transversal_sgulp.persistencia.miConexion;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author gonza
  */
 public class MenuPrincipal extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MenuPrincipal.class.getName());
 
     /**
      * Creates new form MenuPrincipal
      */
+    private static final String HOST = "localhost";
+    private static final String PORT = "3306";
+    private static final String DB_NAME = "grupo9_universidad";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+    private miConexion con;
     private AlumnoVista alumnoVista;
-    
+    private MateriaVista materiaVista;
+
+    private static final java.awt.Dimension TAMANIO_VENTANA = new java.awt.Dimension(700, 480);
+
     public MenuPrincipal() {
+
         initComponents();
-        
+        try {
+            iniciarConexion();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo conectar con la Base de Datos - Verifique XAMPP", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+    }
+
+    private void mostrar(javax.swing.JInternalFrame ventana) {
+        if (ventana.getParent() == null) {
+            ventana.setSize(TAMANIO_VENTANA);
+            escritorio.add(ventana);
+        }
+        ventana.setVisible(true);
+        ventana.toFront();
+        try {
+            ventana.setSelected(true);
+        } catch (java.beans.PropertyVetoException ex) {
+        }
+    }
+
+    private void iniciarConexion() throws SQLException {
+        String url = "jdbc:mariadb://" + HOST + ":" + PORT + "/" + DB_NAME;
+        con = new miConexion(
+                url,
+                USER,
+                PASSWORD
+        );
+        if (con.buscarConexion() == null) {
+            System.out.println("Error de conexion");
+        }
     }
 
     /**
@@ -85,12 +130,19 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void gestionAlumnosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionAlumnosActionPerformed
-       if(alumnoVista == null){
-       }
+        if (alumnoVista == null || alumnoVista.isClosed()) {
+            alumnoVista = new AlumnoVista();
+        }
+        mostrar(alumnoVista);
+
     }//GEN-LAST:event_gestionAlumnosActionPerformed
 
     private void gestionMateriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionMateriasActionPerformed
-        // TODO add your handling code here:
+        // materiaVista
+          if (materiaVista == null || materiaVista.isClosed()) {
+            materiaVista = new MateriaVista();
+        }
+        mostrar(materiaVista);
     }//GEN-LAST:event_gestionMateriasActionPerformed
 
     /**
