@@ -32,7 +32,7 @@ public class Grupo9_TRANSVERSAL_SGULP {
         );
         try {
             if (conexion.buscarConexion() == null) {
-                throw new SQLException("Error de conexión: verifique usuario, contraseña, nombre de bbdd, host y puerto (tal vez alternar entre 3306 y 3307)");
+                throw new SQLException("Error de conexion: verifique usuario, contraseña, nombre de bbdd, host y puerto (tal vez alternar entre 3306 y 3307)");
             }
             MateriaData materiaData = new MateriaData(conexion);
             verificarMaterias(materiaData);
@@ -87,7 +87,7 @@ public class Grupo9_TRANSVERSAL_SGULP {
         Alumno inexistente = new Alumno(999, 11111111, "Alumno Fantasma", Date.valueOf("2000-01-01"), true);
         try {
             alumnoData.actualizarAlumno(inexistente);
-            System.out.println("ERROR: se actualizó un alumno que no existe");
+            System.out.println("ERROR: se actualizo un alumno que no existe");
         } catch (SQLException ex) {
             System.out.println("OK, se detecto el error: " + ex.getMessage());
         }
@@ -97,9 +97,9 @@ public class Grupo9_TRANSVERSAL_SGULP {
         if (paraBaja != null) {
             alumnoData.bajaLogicaAlumno(paraBaja.getIdAlumno());
             Alumno dadoDeBaja = alumnoData.buscarAlumno(paraBaja.getIdAlumno());
-            System.out.println("Baja lógica de " + dadoDeBaja + ", activo=" + dadoDeBaja.isActivo());
+            System.out.println("Baja logica de " + dadoDeBaja + ", activo=" + dadoDeBaja.isActivo());
         } else {
-            System.out.println("No existe el alumno para la baja lógica");
+            System.out.println("No existe el alumno para la baja logica");
         }
 
         // Prueba: reactivación lógica
@@ -107,18 +107,20 @@ public class Grupo9_TRANSVERSAL_SGULP {
         if (paraReactivar != null) {
             alumnoData.reactivacionLogicaAlumno(paraReactivar.getIdAlumno());
             Alumno reactivado = alumnoData.buscarAlumno(paraReactivar.getIdAlumno());
-            System.out.println("Reactivación lógica de " + reactivado + ", activo=" + reactivado.isActivo());
+            System.out.println("Reactivacion logica de " + reactivado + ", activo=" + reactivado.isActivo());
         } else {
             System.out.println("No existe el alumno para la reactivación lógica");
         }
-
-        int idBorrar = (int) (Math.random() * 10);
-        alumnoData.borrarAlumno(idBorrar, false, false);
-        Alumno borrado = alumnoData.buscarAlumno(idBorrar);
+        //prueba de borrar alumno
+        int idAlumnoNuevo =  alumnoData.insertarAlumno(new Alumno(12456456, "Pepe Argento", Date.valueOf("1988-12-10")));
+        Alumno cargado = alumnoData.buscarAlumno(idAlumnoNuevo);
+        System.out.println("Se cargo el alumno "+ cargado.getNombre()+" su id es: "+cargado.getIdAlumno());
+        alumnoData.borrarAlumno(idAlumnoNuevo, false, false);
+        Alumno borrado = alumnoData.buscarAlumno(idAlumnoNuevo);
         if (borrado == null) {
-            System.out.println("Se borró el alumno id= " + idBorrar);
+            System.out.println("Se borro el alumno id= " + idAlumnoNuevo);
         } else {
-            System.out.println("ERROR: el alumno id= " + idBorrar + " sigue existiendo");
+            System.out.println("ERROR: el alumno id= " + idAlumnoNuevo + " sigue existiendo");
         }
     }
 
@@ -141,7 +143,7 @@ public class Grupo9_TRANSVERSAL_SGULP {
         Materia inexistente = new Materia(999, "Materia Fantasma", true);
         try {
             materiaData.actualizarMateria(inexistente);
-            System.out.println("ERROR: se aactualizó una materia que no existe");
+            System.out.println("ERROR: se aactualizo una materia que no existe");
         } catch (SQLException ex) {
             System.out.println("OK, se detecto el error: " + ex.getMessage());
         }
@@ -151,9 +153,9 @@ public class Grupo9_TRANSVERSAL_SGULP {
         if (paraBaja != null) {
             materiaData.bajaLogicaMateria(paraBaja.getIdMateria());
             Materia dadaDeBaja = materiaData.buscarMateria(paraBaja.getIdMateria());
-            System.out.println("Baja lógica de " + dadaDeBaja + ", estado=" + dadaDeBaja.isEstado());
+            System.out.println("Baja logica de " + dadaDeBaja + ", estado=" + dadaDeBaja.isEstado());
         } else {
-            System.out.println("No existe la materia para la baja lógica");
+            System.out.println("No existe la materia para la baja logica");
         }
 
         // Prueba: reactivación lógica
@@ -161,16 +163,18 @@ public class Grupo9_TRANSVERSAL_SGULP {
         if (paraReactivar != null) {
             materiaData.reactivacionLogicaMateria(paraReactivar.getIdMateria());
             Materia reactivada = materiaData.buscarMateria(paraReactivar.getIdMateria());
-            System.out.println("Reactivación lógica de " + reactivada + ", estado=" + reactivada.isEstado());
+            System.out.println("Reactivacion logica de " + reactivada + ", estado=" + reactivada.isEstado());
         } else {
-            System.out.println("No existe la materia para la reactivación lógica");
+            System.out.println("No existe la materia para la reactivacion logica");
         }
 
-        int idBorrar = (int) (Math.random() * 10);
+        int idBorrar = materiaData.insertarMateria(new Materia(20,"Programacion",true));
+        Materia cargada = materiaData.buscarMateria(idBorrar);
+        System.out.println("Se cargo la materia "+cargada.getNombre()+" su id es: "+ cargada.getIdMateria());
         materiaData.borrarMateria(idBorrar, false, false);
         Materia borrada = materiaData.buscarMateria(idBorrar);
         if (borrada == null) {
-            System.out.println("Se borró la materia id= " + idBorrar);
+            System.out.println("Se borro la materia id= " + idBorrar);
         } else {
             System.out.println("ERROR: la materia id= " + idBorrar + " sigue existiendo");
         }
