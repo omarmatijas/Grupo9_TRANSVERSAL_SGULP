@@ -13,6 +13,9 @@ import java.sql.SQLException;
  * @author Grupo9
  */
 public class miConexion {
+    /** SQLSTATE de violación de restricción de integridad (clave foránea, unique, etc.). */
+    public static final String SQLSTATE_VIOLACION_INTEGRIDAD = "23000";
+
     private final String url;
     private final String usuario;
     private final String password;

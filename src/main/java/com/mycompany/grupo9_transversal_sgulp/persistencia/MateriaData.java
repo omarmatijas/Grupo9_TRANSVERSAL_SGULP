@@ -77,6 +77,78 @@ public class MateriaData {
         }
     }
 
+    public void borrarMateria(int idMateria, boolean cascade) throws SQLException {
+        borrarMateria(idMateria, cascade, true);
+    }
+
+    public void borrarMateria(int idMateria, boolean cascade, boolean checkIfExists) throws SQLException {
+        Connection conn = conexion.buscarConexion();
+        boolean autoCommitPrevio = conn.getAutoCommit();
+        try {
+            conn.setAutoCommit(false);
+            if (cascade) {
+                String sqlCursadas = "DELETE FROM cursada WHERE idMateria = ?";
+                try (PreparedStatement ps = conn.prepareStatement(sqlCursadas)) {
+                    ps.setInt(1, idMateria);
+                    ps.executeUpdate();
+                }
+            }
+            String sql = "DELETE FROM materia WHERE idMateria = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idMateria);
+                int filas = ps.executeUpdate();
+                if (checkIfExists && filas != 1) {
+                    throw new SQLException("No se pudo borrar la materia, el id= " + idMateria + " no existe");
+                }
+            }
+            conn.commit();
+        } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                ex.addSuppressed(rollbackEx);
+            }
+            if (miConexion.SQLSTATE_VIOLACION_INTEGRIDAD.equals(ex.getSQLState())) {
+                throw new SQLException("No se pudo borrar la materia, el id= " + idMateria + " tiene cursadas asociadas", ex);
+            }
+            throw ex;
+        } finally {
+            conn.setAutoCommit(autoCommitPrevio);
+        }
+    }
+
+    public void bajaLogicaMateria(int idMateria) throws SQLException {
+        cambiarEstado(idMateria, false);
+    }
+
+    public void reactivacionLogicaMateria(int idMateria) throws SQLException {
+        cambiarEstado(idMateria, true);
+    }
+
+    private void cambiarEstado(int idMateria, boolean estado) throws SQLException {
+        Materia materia = buscarMateria(idMateria);
+        String accion = estado ? "reactivar" : "dar de baja";
+        if (materia == null) {
+            throw new SQLException("No se pudo " + accion + " la materia, el id= " + idMateria + " no existe");
+        }
+        if (materia.isEstado() == estado) {
+            /* La materia ya está en el estado pedido; no se modifica.
+             String texto = estado ? "activa" : "inactiva";
+             throw new SQLException("No se pudo " + accion + " la materia, el id= " + idMateria + " ya está " + texto);
+            */
+            return;
+        }
+        String sql = "UPDATE materia SET estado = ? WHERE idMateria = ?";
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
+            ps.setBoolean(1, estado);
+            ps.setInt(2, idMateria);
+            int filas = ps.executeUpdate();
+            if (filas != 1) {
+                throw new SQLException("No se pudo " + accion + " la materia, el id= " + idMateria + " no existe");
+            }
+        }
+    }
+
     public Materia buscarMateria(int idMateria) throws SQLException {
         String sql = "SELECT idMateria, nombre, estado FROM materia WHERE idMateria = ?";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {

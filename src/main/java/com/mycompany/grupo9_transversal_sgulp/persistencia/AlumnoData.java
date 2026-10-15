@@ -19,9 +19,6 @@ import java.util.List;
  */
 public class AlumnoData {
 
-    /** SQLSTATE de violación de restricción de integridad (clave foránea, unique, etc.). */
-    private static final String SQLSTATE_VIOLACION_INTEGRIDAD = "23000";
-
     private final miConexion conexion;
 
     public AlumnoData(miConexion conexion) {
@@ -121,7 +118,7 @@ public class AlumnoData {
             } catch (SQLException rollbackEx) {
                 ex.addSuppressed(rollbackEx);
             }
-            if (SQLSTATE_VIOLACION_INTEGRIDAD.equals(ex.getSQLState())) {
+            if (miConexion.SQLSTATE_VIOLACION_INTEGRIDAD.equals(ex.getSQLState())) {
                 throw new SQLException("No se pudo borrar el alumno, el id= " + idAlumno + " tiene cursadas asociadas", ex);
             }
             throw ex;
