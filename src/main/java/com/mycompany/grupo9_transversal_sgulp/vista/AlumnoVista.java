@@ -4,18 +4,49 @@
  */
 package com.mycompany.grupo9_transversal_sgulp.vista;
 
+import com.mycompany.grupo9_transversal_sgulp.modelo.Alumno;
+import com.mycompany.grupo9_transversal_sgulp.persistencia.AlumnoData;
+import com.mycompany.grupo9_transversal_sgulp.persistencia.miConexion;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author gonza
  */
 public class AlumnoVista extends javax.swing.JInternalFrame {
+    
+    private AlumnoData alumnoData;
 
     /**
      * Creates new form AlumnoVista
      */
-    public AlumnoVista() {
+    public AlumnoVista(miConexion conexion) {
+        alumnoData = new AlumnoData(conexion);
         initComponents();
+        
     }
+    
+    private void mostrarAlumno(Alumno a) {
+        txtId.setText(String.valueOf(a.getIdAlumno()));
+        txtDni.setText(String.valueOf(a.getDni()));
+        txtNombre.setText(a.getNombre());
+        dcFechaNac.setDate(a.getFecNac());
+        chkActivo.setSelected(a.isActivo());
+    }
+    
+     private void limpiar() {
+        txtId.setText("");
+        txtDni.setText("");
+        txtNombre.setText("");
+        dcFechaNac.setDate(null);
+        chkActivo.setSelected(false);
+        tablaAlumnos.clearSelection();
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -53,16 +84,22 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         chkActivo.setEnabled(false);
 
         btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
 
         btnNuevo.setText("Nuevo");
+        btnNuevo.addActionListener(this::btnNuevoActionPerformed);
 
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
         btnBaja.setText("Baja");
+        btnBaja.addActionListener(this::btnBajaActionPerformed);
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         btnAlta.setText("Alta");
+        btnAlta.addActionListener(this::btnAltaActionPerformed);
 
         tablaAlumnos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -170,7 +207,88 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // Deberia validar el DNI
+        int dni;
+        try {
+            dni = Integer.parseInt(txtDni.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "El DNI debe ser numérico.");
+            return;
+        }
+        if (dni <= 0) {
+            JOptionPane.showMessageDialog(this, "El DNI debe ser mayor que cero.");
+            return;
+        }
 
+        // Aca el nombre
+        String nombre = txtNombre.getText().trim();
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.");
+            return;
+        }
+        if (nombre.length() > 30) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede superar los 30 caracteres.");
+            return;
+        }
+
+        // Esto la Fecha
+        if (dcFechaNac.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Elegí una fecha de nacimiento.");
+            return;
+        }
+        LocalDate fecNac = aLocalDate(dcFechaNac.getDate());
+        if (fecNac.isAfter(LocalDate.now())) {
+            JOptionPane.showMessageDialog(this, "La fecha de nacimiento no puede ser futura.");
+            return;
+        }
+              
+    }//GEN-LAST:event_btnGuardarActionPerformed
+        
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        try {                                          
+            int dni;
+            
+            try {
+                dni = Integer.parseInt(txtDni.getText().trim());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Ingresá un DNI numérico.");
+                return;
+            }
+            Alumno a = alumnoData.buscarAlumnoPorDni(dni);
+            if (a == null) {
+                JOptionPane.showMessageDialog(this, "No existe un alumno con ese DNI.");
+            } else {
+                mostrarAlumno(a);
+            }
+        } catch (SQLException ex) {
+            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null,ex);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNuevoActionPerformed
+
+    private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAltaActionPerformed
+
+    private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBajaActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+  private LocalDate aLocalDate(Date fecha) {
+        return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    private Date aDate(LocalDate fecha) {
+        return Date.from(fecha.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlta;
     private javax.swing.JButton btnBaja;
@@ -190,4 +308,5 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
+  
 }
