@@ -82,6 +82,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
 
         chkActivo.setText("Activo");
         chkActivo.setEnabled(false);
+        chkActivo.addActionListener(this::chkActivoActionPerformed);
 
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(this::btnBuscarActionPerformed);
@@ -267,7 +268,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        // TODO add your handling code here:
+        limpiar();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
@@ -281,6 +282,10 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void chkActivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkActivoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chkActivoActionPerformed
 
   private LocalDate aLocalDate(Date fecha) {
         return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
