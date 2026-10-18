@@ -18,18 +18,15 @@ import javax.swing.JOptionPane;
  * @author gonza
  */
 public class AlumnoVista extends javax.swing.JInternalFrame {
-    
+
     private AlumnoData alumnoData;
 
-    /**
-     * Creates new form AlumnoVista
-     */
     public AlumnoVista(miConexion conexion) {
         alumnoData = new AlumnoData(conexion);
         initComponents();
-        
+
     }
-    
+
     private void mostrarAlumno(Alumno a) {
         txtId.setText(String.valueOf(a.getIdAlumno()));
         txtDni.setText(String.valueOf(a.getDni()));
@@ -37,8 +34,8 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         dcFechaNac.setDate(a.getFecNac());
         chkActivo.setSelected(a.isActivo());
     }
-    
-     private void limpiar() {
+
+    private void limpiar() {
         txtId.setText("");
         txtDni.setText("");
         txtNombre.setText("");
@@ -46,7 +43,6 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         chkActivo.setSelected(false);
         tablaAlumnos.clearSelection();
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -115,13 +111,13 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         ));
         jScrollPane1.setViewportView(tablaAlumnos);
 
-        lblId.setText("ID= ");
+        lblId.setText("ID: ");
 
-        lblDni.setText("DNI= ");
+        lblDni.setText("DNI: ");
 
-        lblNombre.setText("Nombre= ");
+        lblNombre.setText("Nombre: ");
 
-        lblFecNac.setText("Fec Nac");
+        lblFecNac.setText("Fec. Nac.:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,7 +133,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
                             .addComponent(lblDni)
                             .addComponent(lblNombre)
                             .addComponent(lblFecNac))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(dcFechaNac, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -243,13 +239,13 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "La fecha de nacimiento no puede ser futura.");
             return;
         }
-              
+
     }//GEN-LAST:event_btnGuardarActionPerformed
-        
+
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        try {                                          
+        try {
             int dni;
-            
+
             try {
                 dni = Integer.parseInt(txtDni.getText().trim());
             } catch (NumberFormatException ex) {
@@ -263,7 +259,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
                 mostrarAlumno(a);
             }
         } catch (SQLException ex) {
-            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null,ex);
+            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
@@ -287,7 +283,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_chkActivoActionPerformed
 
-  private LocalDate aLocalDate(Date fecha) {
+    private LocalDate aLocalDate(Date fecha) {
         return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
@@ -313,5 +309,5 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
-  
+
 }

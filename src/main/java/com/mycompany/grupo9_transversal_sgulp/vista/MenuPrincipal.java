@@ -141,7 +141,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     private void gestionAlumnosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionAlumnosActionPerformed
         if (alumnoVista == null || alumnoVista.isClosed()) {
-            alumnoVista = new AlumnoVista();
+            alumnoVista = new AlumnoVista(con);
         }
         mostrar(alumnoVista);
 
@@ -149,8 +149,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     private void gestionMateriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionMateriasActionPerformed
         // materiaVista
-          if (materiaVista == null || materiaVista.isClosed()) {
-            materiaVista = new MateriaVista();
+        if (materiaVista == null || materiaVista.isClosed()) {
+            materiaVista = new MateriaVista(con);
         }
         mostrar(materiaVista);
     }//GEN-LAST:event_gestionMateriasActionPerformed

@@ -33,7 +33,7 @@
                           <Component id="lblNombre" min="-2" max="-2" attributes="0"/>
                           <Component id="lblFecNac" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="31" max="32767" attributes="0"/>
+                      <EmptySpace pref="36" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="dcFechaNac" alignment="1" max="32767" attributes="0"/>
                           <Component id="txtId" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
@@ -242,22 +242,22 @@
     </Container>
     <Component class="javax.swing.JLabel" name="lblId">
       <Properties>
-        <Property name="text" type="java.lang.String" value="ID= "/>
+        <Property name="text" type="java.lang.String" value="ID: "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblDni">
       <Properties>
-        <Property name="text" type="java.lang.String" value="DNI= "/>
+        <Property name="text" type="java.lang.String" value="DNI: "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblNombre">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Nombre= "/>
+        <Property name="text" type="java.lang.String" value="Nombre: "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lblFecNac">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Fec Nac"/>
+        <Property name="text" type="java.lang.String" value="Fec. Nac.:"/>
       </Properties>
     </Component>
   </SubComponents>

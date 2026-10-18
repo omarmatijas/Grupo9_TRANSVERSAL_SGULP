@@ -4,17 +4,61 @@
  */
 package com.mycompany.grupo9_transversal_sgulp.vista;
 
+import com.mycompany.grupo9_transversal_sgulp.modelo.Materia;
+import com.mycompany.grupo9_transversal_sgulp.persistencia.MateriaData;
+import com.mycompany.grupo9_transversal_sgulp.persistencia.miConexion;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author gonza
  */
 public class MateriaVista extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form MateriaVista
-     */
-    public MateriaVista() {
+    private MateriaData materiaData;
+    private DefaultTableModel modelo;
+
+    public MateriaVista(miConexion conexion) {
+        materiaData = new MateriaData(conexion);
         initComponents();
+        armarTabla();
+        cargarTabla();
+        limpiar();
+    }
+
+    private void armarTabla() {
+        String[] columnas = new String[]{"ID", "Nombre", "Estado"};
+        modelo = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        tablaMaterias.setModel(modelo);
+    }
+
+    private void cargarTabla() {
+        modelo.setRowCount(0);
+        try {
+            for (Materia m : materiaData.listarMaterias()) {
+                modelo.addRow(new Object[]{
+                    m.getIdMateria(),
+                    m.getNombre(),
+                    m.isEstado() ? "Activa" : "Inactiva"
+                });
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudieron cargar las materias: " + ex.getMessage());
+        }
+    }
+
+    private void limpiar() {
+        txtId.setText("");
+        txtNombre.setText("");
+        chkEstado.setSelected(true);
+        tablaMaterias.clearSelection();
     }
 
     /**
@@ -36,7 +80,7 @@ public class MateriaVista extends javax.swing.JInternalFrame {
         btnEliminar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaMaterias = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
+        lblId = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
 
         setClosable(true);
@@ -44,17 +88,22 @@ public class MateriaVista extends javax.swing.JInternalFrame {
         txtId.setEditable(false);
         txtId.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        chkEstado.setText("Estado");
+        chkEstado.setText("Activa");
 
         btnNuevo.setText("Nuevo");
+        btnNuevo.addActionListener(this::btnNuevoActionPerformed);
 
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
         btnAlta.setText("Alta");
+        btnAlta.addActionListener(this::btnAltaActionPerformed);
 
         btnBaja.setText("Baja");
+        btnBaja.addActionListener(this::btnBajaActionPerformed);
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         tablaMaterias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -69,9 +118,9 @@ public class MateriaVista extends javax.swing.JInternalFrame {
         ));
         jScrollPane1.setViewportView(tablaMaterias);
 
-        jLabel1.setText("ID= ");
+        lblId.setText("ID: ");
 
-        lblNombre.setText("Nombre= ");
+        lblNombre.setText("Nombre: ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -82,7 +131,7 @@ public class MateriaVista extends javax.swing.JInternalFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
+                    .addComponent(lblId)
                     .addComponent(lblNombre))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,11 +156,12 @@ public class MateriaVista extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(chkEstado)
-                            .addComponent(jLabel1))
+                            .addComponent(lblId))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -123,15 +173,34 @@ public class MateriaVista extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnAlta)
                         .addGap(12, 12, 12)
-                        .addComponent(btnBaja))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(71, 71, 71)
-                .addComponent(btnEliminar)
-                .addContainerGap(52, Short.MAX_VALUE))
+                        .addComponent(btnBaja)
+                        .addGap(71, 71, 71)
+                        .addComponent(btnEliminar)))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        limpiar();
+    }//GEN-LAST:event_btnNuevoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAltaActionPerformed
+
+    private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBajaActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -141,8 +210,8 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JCheckBox chkEstado;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblId;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JTable tablaMaterias;
     private javax.swing.JTextField txtId;
