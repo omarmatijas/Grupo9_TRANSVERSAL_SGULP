@@ -80,6 +80,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
             System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -280,7 +281,23 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "La fecha de nacimiento no puede ser futura.");
             return;
         }
-
+        java.sql.Date fecha = java.sql.Date.valueOf(fecNac);
+        try {
+            if (txtId.getText().isEmpty()) {
+                Alumno nuevo = new Alumno(dni, nombre, fecha);
+                alumnoData.insertarAlumno(nuevo);
+                JOptionPane.showMessageDialog(this, "Alumno guardado con id " + nuevo.getIdAlumno());
+            } else {
+                int id = Integer.parseInt(txtId.getText());
+                Alumno a = new Alumno(id, dni, nombre, fecha, chkActivo.isSelected());
+                alumnoData.actualizarAlumno(a);
+                JOptionPane.showMessageDialog(this, "Alumno actualizado.");
+            }
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo guardar: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
