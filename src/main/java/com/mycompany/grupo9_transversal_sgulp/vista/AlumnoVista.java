@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -20,12 +21,49 @@ import javax.swing.JOptionPane;
 public class AlumnoVista extends javax.swing.JInternalFrame {
 
     private AlumnoData alumnoData;
+     private DefaultTableModel modeloTabla;
 
     public AlumnoVista(miConexion conexion) {
         alumnoData = new AlumnoData(conexion);
         initComponents();
+        armarTabla();
+        cargarTabla();
+        limpiar();
 
     }
+    
+    private void armarTabla() {
+        modeloTabla = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        modeloTabla.addColumn("ID");
+        modeloTabla.addColumn("DNI");
+        modeloTabla.addColumn("Nombre");
+        modeloTabla.addColumn("Fecha de nacimiento");
+        modeloTabla.addColumn("Estado");
+        tablaAlumnos.setModel(modeloTabla);
+    }
+    
+    private void tablaAlumnosMouseClicked(java.awt.event.MouseEvent evt) {                                          
+        int fila = tablaAlumnos.getSelectedRow();
+        if (fila >= 0) {
+            String idString = modeloTabla.getValueAt(fila, 0).toString();
+                 txtId.setText(idString);
+            int id = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
+            Alumno a = null;
+            try {
+                a = alumnoData.buscarAlumno(id);
+            } catch (SQLException ex) {
+                System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+            if (a != null) {
+                mostrarAlumno(a);
+            }
+        }
+    }     
 
     private void mostrarAlumno(Alumno a) {
         txtId.setText(String.valueOf(a.getIdAlumno()));
@@ -42,6 +80,23 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         dcFechaNac.setDate(null);
         chkActivo.setSelected(false);
         tablaAlumnos.clearSelection();
+    }
+    
+     private void cargarTabla() {
+        modeloTabla.setRowCount(0);
+        try {
+            for (Alumno a : alumnoData.listarAlumnos()) {
+                modeloTabla.addRow(new Object[]{
+                    a.getIdAlumno(),
+                    a.getDni(),
+                    a.getNombre(),
+                    a.getFecNac(),
+                    a.isActivo() ? "Activo" : "Inactivo"
+                });
+            }
+        } catch (SQLException ex) {
+            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     /**
@@ -268,11 +323,21 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_btnAltaActionPerformed
 
     private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
-        // TODO add your handling code here:
+        try {
+            if (txtId.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Seleccioná un alumno de la tabla.");
+                return;
+            }
+            alumnoData.bajaLogicaAlumno(Integer.parseInt(txtId.getText()));
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_btnBajaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
