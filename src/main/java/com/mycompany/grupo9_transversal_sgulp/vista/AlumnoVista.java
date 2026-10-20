@@ -21,7 +21,7 @@ import javax.swing.table.DefaultTableModel;
 public class AlumnoVista extends javax.swing.JInternalFrame {
 
     private AlumnoData alumnoData;
-     private DefaultTableModel modeloTabla;
+    private DefaultTableModel modeloTabla;
 
     public AlumnoVista(miConexion conexion) {
         alumnoData = new AlumnoData(conexion);
@@ -31,7 +31,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         limpiar();
 
     }
-    
+
     private void armarTabla() {
         modeloTabla = new DefaultTableModel() {
             @Override
@@ -46,24 +46,6 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         modeloTabla.addColumn("Estado");
         tablaAlumnos.setModel(modeloTabla);
     }
-    
-    private void tablaAlumnosMouseClicked(java.awt.event.MouseEvent evt) {                                          
-        int fila = tablaAlumnos.getSelectedRow();
-        if (fila >= 0) {
-            String idString = modeloTabla.getValueAt(fila, 0).toString();
-                 txtId.setText(idString);
-            int id = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
-            Alumno a = null;
-            try {
-                a = alumnoData.buscarAlumno(id);
-            } catch (SQLException ex) {
-                System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            }
-            if (a != null) {
-                mostrarAlumno(a);
-            }
-        }
-    }     
 
     private void mostrarAlumno(Alumno a) {
         txtId.setText(String.valueOf(a.getIdAlumno()));
@@ -81,8 +63,8 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         chkActivo.setSelected(false);
         tablaAlumnos.clearSelection();
     }
-    
-     private void cargarTabla() {
+
+    private void cargarTabla() {
         modeloTabla.setRowCount(0);
         try {
             for (Alumno a : alumnoData.listarAlumnos()) {
@@ -98,7 +80,6 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
             System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -164,6 +145,11 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
 
             }
         ));
+        tablaAlumnos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaAlumnosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaAlumnos);
 
         lblId.setText("ID: ");
@@ -323,7 +309,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
-        
+
     }//GEN-LAST:event_btnAltaActionPerformed
 
     private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
@@ -347,6 +333,23 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     private void chkActivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkActivoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_chkActivoActionPerformed
+
+    private void tablaAlumnosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaAlumnosMouseClicked
+        int fila = tablaAlumnos.getSelectedRow();
+        if (fila >= 0) {
+            int id = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
+            Alumno a = null;
+            try {
+                a = alumnoData.buscarAlumno(id);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "No se pudo cargar el alumno: " + ex.getMessage());
+            }
+            if (a != null) {
+                mostrarAlumno(a);
+            }
+        }
+
+    }//GEN-LAST:event_tablaAlumnosMouseClicked
 
     private LocalDate aLocalDate(Date fecha) {
         return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
