@@ -60,7 +60,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         txtDni.setText("");
         txtNombre.setText("");
         dcFechaNac.setDate(null);
-        chkActivo.setSelected(false);
+        chkActivo.setSelected(true);
         tablaAlumnos.clearSelection();
     }
 
@@ -77,7 +77,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
                 });
             }
         } catch (SQLException ex) {
-            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            JOptionPane.showMessageDialog(this, "No se pudieron cargar los alumnos: " + ex.getMessage());
         }
     }
 
@@ -115,7 +115,6 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
 
         chkActivo.setText("Activo");
         chkActivo.setEnabled(false);
-        chkActivo.addActionListener(this::chkActivoActionPerformed);
 
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(this::btnBuscarActionPerformed);
@@ -247,7 +246,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // Deberia validar el DNI
+        // Validación del DNI
         int dni;
         try {
             dni = Integer.parseInt(txtDni.getText().trim());
@@ -260,7 +259,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
             return;
         }
 
-        // Aca el nombre
+        // Validación del nombre
         String nombre = txtNombre.getText().trim();
         if (nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.");
@@ -271,7 +270,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
             return;
         }
 
-        // Esto la Fecha
+        // Validacion de la fecha de nacimiento
         if (dcFechaNac.getDate() == null) {
             JOptionPane.showMessageDialog(this, "Elegí una fecha de nacimiento.");
             return;
@@ -317,7 +316,7 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
                 mostrarAlumno(a);
             }
         } catch (SQLException ex) {
-            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            JOptionPane.showMessageDialog(this, "No se pudo buscar el alumno: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
@@ -326,7 +325,18 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
-
+        if (txtId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccioná un alumno de la tabla.");
+            return;
+        }
+        try {
+            alumnoData.reactivacionLogicaAlumno(Integer.parseInt(txtId.getText()));
+            JOptionPane.showMessageDialog(this, "Alumno dado de alta.");
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo dar de alta: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btnAltaActionPerformed
 
     private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
@@ -336,20 +346,33 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
                 return;
             }
             alumnoData.bajaLogicaAlumno(Integer.parseInt(txtId.getText()));
+            JOptionPane.showMessageDialog(this, "Alumno dado de baja.");
             limpiar();
             cargarTabla();
         } catch (SQLException ex) {
-            System.getLogger(AlumnoVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            JOptionPane.showMessageDialog(this, "No se pudo dar de baja: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnBajaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        if (txtId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccioná un alumno de la tabla.");
+            return;
+        }
+        int resp = JOptionPane.showConfirmDialog(this,
+                "¿Eliminar definitivamente al alumno?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (resp != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            alumnoData.borrarAlumno(Integer.parseInt(txtId.getText()), false);
+            JOptionPane.showMessageDialog(this, "Alumno eliminado.");
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
-
-    private void chkActivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkActivoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_chkActivoActionPerformed
 
     private void tablaAlumnosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaAlumnosMouseClicked
         int fila = tablaAlumnos.getSelectedRow();
@@ -372,9 +395,6 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         return fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
-    private Date aDate(LocalDate fecha) {
-        return Date.from(fecha.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlta;
     private javax.swing.JButton btnBaja;
