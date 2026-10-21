@@ -34,6 +34,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
     public MenuPrincipal() {
 
         initComponents();
+        setSize(1000, 650);            // tamaño fijo de la ventana principal
+        setLocationRelativeTo(null);   // la centra en la pantalla
+        setResizable(false);           // el usuario no la puede achicar/agrandar
         try {
             iniciarConexion();
         } catch (SQLException ex) {
@@ -45,7 +48,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private void mostrar(javax.swing.JInternalFrame ventana) {
         if (ventana.getParent() == null) {
             ventana.setSize(TAMANIO_VENTANA);
+            ventana.setClosable(true);      // botón X
+            ventana.setIconifiable(true);   // botón minimizar
+            ventana.setMaximizable(false);  // sin maximizar
+            ventana.setResizable(false);    // tamaño fijo
             escritorio.add(ventana);
+            centrar(ventana);
         }
         ventana.setVisible(true);
         ventana.toFront();
@@ -53,6 +61,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
             ventana.setSelected(true);
         } catch (java.beans.PropertyVetoException ex) {
         }
+    }
+
+    private void centrar(javax.swing.JInternalFrame ventana) {
+        int x = (escritorio.getWidth() - ventana.getWidth()) / 2;
+        int y = (escritorio.getHeight() - ventana.getHeight()) / 2;
+        ventana.setLocation(Math.max(x, 0), Math.max(y, 0));
     }
 
     private void iniciarConexion() throws SQLException {
