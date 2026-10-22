@@ -40,7 +40,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
         try {
             iniciarConexion();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "No se pudo conectar con la Base de Datos - Verifique XAMPP", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Verifique XAMPP\n" + ex.getMessage(),
+                    "Error de Conexión", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
     }
@@ -77,7 +78,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 PASSWORD
         );
         if (con.buscarConexion() == null) {
-            System.out.println("Error de conexion");
+            throw new SQLException("No se pudo conectar a " + url);
         }
     }
 
