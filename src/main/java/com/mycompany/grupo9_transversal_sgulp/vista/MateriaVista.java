@@ -118,6 +118,11 @@ public class MateriaVista extends javax.swing.JInternalFrame {
 
             }
         ));
+        tablaMaterias.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMateriasMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaMaterias);
 
         lblId.setText("ID: ");
@@ -207,6 +212,15 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void tablaMateriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMateriasMouseClicked
+        int fila = tablaMaterias.getSelectedRow();
+        if (fila >= 0) {
+            txtId.setText(modelo.getValueAt(fila, 0).toString());
+            txtNombre.setText(modelo.getValueAt(fila, 1).toString());
+            chkEstado.setSelected("Activa".equals(modelo.getValueAt(fila, 2)));
+        }
+    }//GEN-LAST:event_tablaMateriasMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
