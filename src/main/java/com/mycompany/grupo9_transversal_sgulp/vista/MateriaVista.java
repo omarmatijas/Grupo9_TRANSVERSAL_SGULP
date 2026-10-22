@@ -210,7 +210,21 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnBajaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+  if (txtId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
+            return;
+        }
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "¿Eliminar definitivamente la materia?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (opcion == JOptionPane.YES_OPTION) {
+      try {
+          materiaData.borrarMateria(Integer.parseInt(txtId.getText()),false);
+          limpiar();
+          cargarTabla();
+      } catch (SQLException ex) {
+          System.getLogger(MateriaVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+      }
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void tablaMateriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMateriasMouseClicked
