@@ -29,7 +29,7 @@ public class MateriaData {
             return true;
         }
     }
-
+        
     public int insertarMateria(Materia materia) throws SQLException {
         String sql = "INSERT INTO materia (nombre, estado) VALUES (?, ?)";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -176,4 +176,6 @@ public class MateriaData {
         }
         return materias;
     }
+
+   
 }
