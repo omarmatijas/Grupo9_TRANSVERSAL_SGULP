@@ -198,7 +198,41 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
+        String nombre = txtNombre.getText().trim();
+
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.");
+            return;
+        }
+        if (nombre.length() > 20) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede superar los 20 caracteres.");
+            return;
+        }
+
+        boolean activa = chkEstado.isSelected();
+
+        if (txtId.getText().isEmpty()) {
+            try {
+                // ALTA: no hay id, es una materia nueva
+                Materia m = new Materia(nombre, activa);
+                materiaData.insertarMateria(m);
+                JOptionPane.showMessageDialog(this, "Materia guardada con ID " + m.getIdMateria());
+            } catch (SQLException ex) {
+                System.getLogger(MateriaVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        } else {
+            try {
+                // MODIFICACIÓN: ya tiene id
+                int id = Integer.parseInt(txtId.getText());
+                Materia m = new Materia(id, nombre, activa);
+                materiaData.actualizarMateria(m);
+                JOptionPane.showMessageDialog(this, "Materia modificada.");
+            } catch (SQLException ex) {
+                System.getLogger(MateriaVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
+        limpiar();
+        cargarTabla();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
@@ -206,7 +240,17 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnAltaActionPerformed
 
     private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
-        // TODO add your handling code here:
+        try {
+            if (txtId.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
+                return;
+            }
+            materiaData.bajaLogicaMateria(Integer.parseInt(txtId.getText()));
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            System.getLogger(MateriaVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_btnBajaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
