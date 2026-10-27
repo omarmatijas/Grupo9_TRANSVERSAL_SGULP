@@ -10,15 +10,13 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author gonza
+ * @author Grupo9
  */
 public class MenuPrincipal extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MenuPrincipal.class.getName());
 
-    /**
-     * Creates new form MenuPrincipal
-     */
+    
     private static final String HOST = "localhost";
     private static final String PORT = "3306";
     private static final String DB_NAME = "grupo9_universidad";
@@ -112,11 +110,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 885, Short.MAX_VALUE)
+            .addGap(0, 853, Short.MAX_VALUE)
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 408, Short.MAX_VALUE)
+            .addGap(0, 396, Short.MAX_VALUE)
         );
 
         menuAlumnos.setText("Alumnos");
@@ -135,9 +133,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
         menu.add(menuMaterias);
 
-        menuInscripciones.setText("Inscripciones");
+        menuInscripciones.setText("Cursada");
 
-        gestionInscripciones.setText("Gestión de Inscripciones");
+        gestionInscripciones.setText("Gestión de Cursada");
         gestionInscripciones.addActionListener(this::gestionInscripcionesActionPerformed);
         menuInscripciones.add(gestionInscripciones);
 
@@ -163,11 +161,17 @@ public class MenuPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(escritorio)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(escritorio)
+                .addGap(26, 26, 26))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(escritorio, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(escritorio)
+                .addContainerGap())
         );
 
         pack();

@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author grupo9
+ * @author Grupo9
  */
 public class CursadaData {
-    
+
     private final miConexion conexion;
 
     public CursadaData(miConexion conexion) {
@@ -44,12 +44,9 @@ public class CursadaData {
             ps.setInt(1, cursada.getAlumno().getIdAlumno());
             ps.setInt(2, cursada.getMateria().getIdMateria());
             ps.setInt(3, cursada.getCursa());
-            
+
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return true;
-                }
-                return false;
+                return rs.next() && rs.getInt(1) > 0;
             }
         }
     }
@@ -60,7 +57,7 @@ public class CursadaData {
             ps.setInt(1, cursada.getAlumno().getIdAlumno());
             ps.setInt(2, cursada.getMateria().getIdMateria());
             ps.setInt(3, cursada.getCursa());
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return parsearRS(rs);
@@ -69,8 +66,11 @@ public class CursadaData {
             }
         }
     }
-    
+
     public int inscribir(Cursada cursada) throws SQLException {
+        if (existeCursada(cursada)) {
+            throw new SQLException("El alumno ya está inscripto en esa materia ese año.");
+        }
         String sql = "INSERT INTO cursada (idAlumno, idMateria, nota, asist, cursa) VALUES (?, ?, 0, 0, ?)";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, cursada.getAlumno().getIdAlumno());
@@ -103,14 +103,14 @@ public class CursadaData {
             return idCursada;
         }
     }
-    
+
     public boolean anularInscripcion(Cursada cursada) throws SQLException {
         String sql = "DELETE FROM cursada WHERE idAlumno = ? AND idMateria = ? AND cursa = ?";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, cursada.getAlumno().getIdAlumno());
             ps.setInt(2, cursada.getMateria().getIdMateria());
             ps.setInt(3, cursada.getCursa());
-            
+
             int filas;
             try {
                 filas = ps.executeUpdate();
@@ -123,7 +123,7 @@ public class CursadaData {
         }
         return true;
     }
-    
+
     public List<Cursada> listarMateriasCursadas() throws SQLException {
         List<Cursada> cursadas = new ArrayList<>();
         String sql = "SELECT * FROM cursada";
@@ -134,16 +134,16 @@ public class CursadaData {
         }
         return cursadas;
     }
-    
+
     public List<Materia> listarMateriasNoCursadas(int idAlumno, int anio) throws SQLException {
         List<Materia> materias = new ArrayList<>();
-        String sql = "SELECT * FROM materia WHERE estado = 1 AND idMateria NOT IN " + 
-                "(SELECT idMateria FROM cursada WHERE idAlumno = ? AND cursa = ?) " +
-                "ORDER BY nombre";
+        String sql = "SELECT * FROM materia WHERE estado = 1 AND idMateria NOT IN "
+                + "(SELECT idMateria FROM cursada WHERE idAlumno = ? AND cursa = ?) "
+                + "ORDER BY nombre";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idAlumno);
             ps.setInt(2, anio);
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     materias.add(new Materia(
@@ -156,14 +156,14 @@ public class CursadaData {
         }
         return materias;
     }
-    
+
     public List<Alumno> listarAlumnosPorMateria(int idMateria) throws SQLException {
         List<Alumno> alumnos = new ArrayList<>();
         String sql = "SELECT * FROM alumno a JOIN cursada c ON c.idAlumno = a.idAlumno "
                 + "AND c.idMateria = ? ORDER BY nombre";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idMateria);
-            
+
             try (ResultSet rs = ps.executeQuery(sql)) {
                 while (rs.next()) {
                     alumnos.add(new Alumno(
@@ -178,7 +178,7 @@ public class CursadaData {
         }
         return alumnos;
     }
-    
+
     public void actualizarEstadoAlumno(int idAlumno) throws SQLException {
         String sql = "UPDATE alumno SET estado = (SELECT COUNT(*) > 0 "
                 + "FROM cursada WHERE idAlumno = ?)";
@@ -186,13 +186,13 @@ public class CursadaData {
             ps.setInt(1, idAlumno);
         }
     }
-    
+
     // actualizarNota
-    public void actualizarNta(int idAlumno, int idMateria, int anio, double nota){
+    public void actualizarNta(int idAlumno, int idMateria, int anio, double nota) {
         String sql = "UPDATE cursada SET nota = ? WHERE idAlumno = ? AND idMateria = ? AND cursa = ?";
-        
+
         try {
-            PreparedStatement ps =conexion.buscarConexion().prepareStatement(sql);
+            PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql);
             ps.setDouble(1, nota);
             ps.setInt(2, idAlumno);
             ps.setInt(3, idMateria);
@@ -203,7 +203,7 @@ public class CursadaData {
             Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     // marcarAsistencia
     public void marcarAsistencia(int idAlumno, int idMateria, int anio) {
         String sql = "UPDATE cursada SET asist = asist + 1 "
@@ -223,7 +223,7 @@ public class CursadaData {
             Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     // listarCursadasPorAlumno
     public List<Cursada> listarMateriasPorAlumno(int idAlumno) {
         List<Cursada> cursadas = new ArrayList<>();
@@ -252,8 +252,7 @@ public class CursadaData {
         }
         return cursadas;
     }
-    
-    
+
     public Cursada parsearRS(ResultSet rs) throws SQLException {
         AlumnoData alumnoData = new AlumnoData(conexion);
         MateriaData materiaData = new MateriaData(conexion);

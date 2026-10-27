@@ -20,13 +20,11 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author gonza
+ * @author Grupo9
  */
 public class InscripcionVista extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form InscripcionVista
-     */
+    
     private AlumnoData alumnoData;
     private CursadaData cursadaData;
     private DefaultTableModel modeloTabla;
@@ -121,13 +119,19 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
 
         lblAlumno.setText("Alumno: ");
 
+        cboAlumno.addActionListener(this::cboAlumnoActionPerformed);
+
         lblAnio.setText("Año: ");
+
+        spAnio.addChangeListener(this::spAnioStateChanged);
 
         grupoMaterias.add(rbNoInscriptas);
         rbNoInscriptas.setText("Materias no inscriptas");
+        rbNoInscriptas.addActionListener(this::rbNoInscriptasActionPerformed);
 
         grupoMaterias.add(rbInscriptas);
         rbInscriptas.setText("Materias inscriptas");
+        rbInscriptas.addActionListener(this::rbInscriptasActionPerformed);
 
         tablaMaterias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -211,7 +215,7 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnInscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInscribirActionPerformed
-                int fila = tablaMaterias.getSelectedRow();
+        int fila = tablaMaterias.getSelectedRow();
         if (fila < 0) {
             JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
             return;
@@ -222,7 +226,6 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
         try {
             cursadaData.inscribir(new Cursada(alumno, materia, 0, 0, anio));
             JOptionPane.showMessageDialog(this, "Inscripción realizada.");
-            cargarTabla();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "No se pudo inscribir: " + ex.getMessage());
         }
@@ -230,7 +233,7 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnInscribirActionPerformed
 
     private void btnAnularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnularActionPerformed
-                int fila = tablaMaterias.getSelectedRow();
+        int fila = tablaMaterias.getSelectedRow();
         if (fila < 0) {
             JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
             return;
@@ -247,12 +250,27 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
         try {
             cursadaData.anularInscripcion(new Cursada(alumno, materia, 0, 0, anio));
             JOptionPane.showMessageDialog(this, "Inscripción anulada.");
-            cargarTabla();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "No se pudo anular: " + ex.getMessage());
         }
         cargarTabla();
     }//GEN-LAST:event_btnAnularActionPerformed
+
+    private void cboAlumnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAlumnoActionPerformed
+        cargarTabla();
+    }//GEN-LAST:event_cboAlumnoActionPerformed
+
+    private void rbNoInscriptasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbNoInscriptasActionPerformed
+        cargarTabla();
+    }//GEN-LAST:event_rbNoInscriptasActionPerformed
+
+    private void rbInscriptasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbInscriptasActionPerformed
+        cargarTabla();
+    }//GEN-LAST:event_rbInscriptasActionPerformed
+
+    private void spAnioStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spAnioStateChanged
+        cargarTabla();
+    }//GEN-LAST:event_spAnioStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

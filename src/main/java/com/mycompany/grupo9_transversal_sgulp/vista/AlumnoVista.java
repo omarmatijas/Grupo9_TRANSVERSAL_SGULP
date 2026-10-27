@@ -16,7 +16,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author gonza
+ * @author Grupo9
  */
 public class AlumnoVista extends javax.swing.JInternalFrame {
 
