@@ -34,6 +34,28 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="menuInscripciones">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Inscripciones"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="gestionInscripciones">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Gesti&#xf3;n de Inscripciones"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="cargaNotas">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Carga de notas y asistencia"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="materiasPorAlumno">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Materias que cursa un alumno"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="javax.swing.JMenu" name="menuOpciones">
           <Properties>
             <Property name="text" type="java.lang.String" value="Opciones"/>

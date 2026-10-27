@@ -97,6 +97,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
         gestionAlumnos = new javax.swing.JMenuItem();
         menuMaterias = new javax.swing.JMenu();
         gestionMaterias = new javax.swing.JMenuItem();
+        menuInscripciones = new javax.swing.JMenu();
+        gestionInscripciones = new javax.swing.JMenuItem();
+        cargaNotas = new javax.swing.JMenuItem();
+        materiasPorAlumno = new javax.swing.JMenuItem();
         menuOpciones = new javax.swing.JMenu();
         menuSalir = new javax.swing.JMenuItem();
 
@@ -129,6 +133,19 @@ public class MenuPrincipal extends javax.swing.JFrame {
         menuMaterias.add(gestionMaterias);
 
         menu.add(menuMaterias);
+
+        menuInscripciones.setText("Inscripciones");
+
+        gestionInscripciones.setText("Gestión de Inscripciones");
+        menuInscripciones.add(gestionInscripciones);
+
+        cargaNotas.setText("Carga de notas y asistencia");
+        menuInscripciones.add(cargaNotas);
+
+        materiasPorAlumno.setText("Materias que cursa un alumno");
+        menuInscripciones.add(materiasPorAlumno);
+
+        menu.add(menuInscripciones);
 
         menuOpciones.setText("Opciones");
 
@@ -200,11 +217,15 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem cargaNotas;
     private javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenuItem gestionAlumnos;
+    private javax.swing.JMenuItem gestionInscripciones;
     private javax.swing.JMenuItem gestionMaterias;
+    private javax.swing.JMenuItem materiasPorAlumno;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenu menuAlumnos;
+    private javax.swing.JMenu menuInscripciones;
     private javax.swing.JMenu menuMaterias;
     private javax.swing.JMenu menuOpciones;
     private javax.swing.JMenuItem menuSalir;
