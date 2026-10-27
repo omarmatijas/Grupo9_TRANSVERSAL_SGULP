@@ -99,7 +99,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
         menuInscripciones = new javax.swing.JMenu();
         gestionInscripciones = new javax.swing.JMenuItem();
         cargaNotas = new javax.swing.JMenuItem();
-        materiasPorAlumno = new javax.swing.JMenuItem();
         menuOpciones = new javax.swing.JMenu();
         menuSalir = new javax.swing.JMenuItem();
 
@@ -141,9 +140,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
         cargaNotas.setText("Carga de notas y asistencia");
         menuInscripciones.add(cargaNotas);
-
-        materiasPorAlumno.setText("Materias que cursa un alumno");
-        menuInscripciones.add(materiasPorAlumno);
 
         menu.add(menuInscripciones);
 
@@ -235,7 +231,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem gestionAlumnos;
     private javax.swing.JMenuItem gestionInscripciones;
     private javax.swing.JMenuItem gestionMaterias;
-    private javax.swing.JMenuItem materiasPorAlumno;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenu menuAlumnos;
     private javax.swing.JMenu menuInscripciones;

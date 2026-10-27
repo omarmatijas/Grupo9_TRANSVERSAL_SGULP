@@ -225,30 +225,26 @@ public class CursadaData {
     }
 
     // listarCursadasPorAlumno
-    public List<Cursada> listarMateriasPorAlumno(int idAlumno) {
+    public List<Cursada> listarMateriasPorAlumno(int idAlumno) throws SQLException {
         List<Cursada> cursadas = new ArrayList<>();
         String sql = "SELECT c.idCursada, c.nota, c.asist, c.cursa, "
                 + "m.idMateria, m.nombre AS nombreMateria, m.estado "
                 + "FROM cursada c JOIN materia m ON c.idMateria = m.idMateria "
-                + "WHERE c.idAlumno = ?";
-
-        try {
-            PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql);
+                + "WHERE c.idAlumno = ? ORDER BY c.cursa, m.nombre";
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idAlumno);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Materia m = new Materia(rs.getInt("idMateria"),
-                        rs.getString("nombreMateria"), rs.getBoolean("estado"));
-                Alumno a = new Alumno();
-                a.setIdAlumno(idAlumno);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Materia m = new Materia(rs.getInt("idMateria"),
+                            rs.getString("nombreMateria"), rs.getBoolean("estado"));
+                    Alumno a = new Alumno();
+                    a.setIdAlumno(idAlumno);
 
-                Cursada c = new Cursada(rs.getInt("idCursada"), a, m,
-                        rs.getFloat("nota"), rs.getFloat("asist"), rs.getInt("cursa"));
-                cursadas.add(c);
+                    Cursada c = new Cursada(rs.getInt("idCursada"), a, m,
+                            rs.getFloat("nota"), rs.getFloat("asist"), rs.getInt("cursa"));
+                    cursadas.add(c);
+                }
             }
-            ps.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cursadas;
     }

@@ -5,12 +5,16 @@
 package com.mycompany.grupo9_transversal_sgulp.vista;
 
 import com.mycompany.grupo9_transversal_sgulp.modelo.Alumno;
+import com.mycompany.grupo9_transversal_sgulp.modelo.Cursada;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.AlumnoData;
+import com.mycompany.grupo9_transversal_sgulp.persistencia.CursadaData;
 import com.mycompany.grupo9_transversal_sgulp.persistencia.miConexion;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -20,13 +24,19 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AlumnoVista extends javax.swing.JInternalFrame {
 
+    private static final int CLASES_TOTALES = 30;
+
     private AlumnoData alumnoData;
+    private CursadaData cursadaData;
     private DefaultTableModel modeloTabla;
+    private DefaultTableModel modeloMaterias;
 
     public AlumnoVista(miConexion conexion) {
         alumnoData = new AlumnoData(conexion);
+        cursadaData = new CursadaData(conexion);
         initComponents();
         armarTabla();
+        armarTablaMaterias();
         cargarTabla();
         limpiar();
 
@@ -47,12 +57,33 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         tablaAlumnos.setModel(modeloTabla);
     }
 
+    private void armarTablaMaterias() {
+        modeloMaterias = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+        modeloMaterias.addColumn("Año");
+        modeloMaterias.addColumn("Materia");
+        modeloMaterias.addColumn("Nota");
+        modeloMaterias.addColumn("Asistencia");
+        tablaMaterias.setModel(modeloMaterias);
+        tablaMaterias.setAutoCreateRowSorter(true);
+        tablaMaterias.getColumnModel().getColumn(0).setPreferredWidth(70);
+        tablaMaterias.getColumnModel().getColumn(1).setPreferredWidth(180);
+        tablaMaterias.getColumnModel().getColumn(2).setPreferredWidth(70);
+        tablaMaterias.getColumnModel().getColumn(3).setPreferredWidth(130);
+    }
+
     private void mostrarAlumno(Alumno a) {
         txtId.setText(String.valueOf(a.getIdAlumno()));
         txtDni.setText(String.valueOf(a.getDni()));
         txtNombre.setText(a.getNombre());
         dcFechaNac.setDate(a.getFecNac());
         chkActivo.setSelected(a.isActivo());
+        cargarMaterias(a.getIdAlumno());
+        actualizarBotonesEstado();
     }
 
     private void limpiar() {
@@ -62,6 +93,17 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         dcFechaNac.setDate(null);
         chkActivo.setSelected(true);
         tablaAlumnos.clearSelection();
+        if (modeloMaterias != null) {
+            modeloMaterias.setRowCount(0);
+        }
+        actualizarBotonesEstado();
+    }
+
+    private void actualizarBotonesEstado() {
+        boolean cargado = !txtId.getText().isEmpty();
+        boolean activo = chkActivo.isSelected();
+        btnAlta.setEnabled(cargado && !activo);
+        btnBaja.setEnabled(cargado && activo);
     }
 
     private void cargarTabla() {
@@ -79,6 +121,43 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "No se pudieron cargar los alumnos: " + ex.getMessage());
         }
+    }
+
+    private void cargarMaterias(int idAlumno) {
+        modeloMaterias.setRowCount(0);
+        List<Cursada> cursadas;
+        try {
+            cursadas = cursadaData.listarMateriasPorAlumno(idAlumno);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudieron cargar las materias: " + ex.getMessage());
+            return;
+        }
+        for (Cursada c : cursadas) {
+            modeloMaterias.addRow(new Object[]{
+                c.getCursa(),
+                c.getMateria().getNombre(),
+                textoNota(c.getNota()),
+                textoAsistencia(c.getAsist())
+            });
+        }
+    }
+
+    private static String textoNota(float nota) {
+        if (nota == 0f) {
+            return "";
+        }
+        return String.format(Locale.US, "%.1f", nota);
+    }
+
+    private static String textoAsistencia(float asist) {
+        int clases = Math.round(asist);
+        if (clases < 0) {
+            clases = 0;
+        } else if (clases > CLASES_TOTALES) {
+            clases = CLASES_TOTALES;
+        }
+        int porcentaje = Math.round(clases * 100f / CLASES_TOTALES);
+        return clases + "/" + CLASES_TOTALES + " (" + porcentaje + "%)";
     }
 
     /**
@@ -107,6 +186,9 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         lblDni = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
         lblFecNac = new javax.swing.JLabel();
+        lblMaterias = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaMaterias = new javax.swing.JTable();
 
         setClosable(true);
         setTitle("Gestión de Alumnos");
@@ -120,18 +202,23 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(this::btnBuscarActionPerformed);
 
+        btnNuevo.setBackground(new java.awt.Color(102, 255, 255));
         btnNuevo.setText("Nuevo");
         btnNuevo.addActionListener(this::btnNuevoActionPerformed);
 
+        btnGuardar.setBackground(new java.awt.Color(153, 204, 255));
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
+        btnBaja.setBackground(new java.awt.Color(255, 153, 51));
         btnBaja.setText("Baja");
         btnBaja.addActionListener(this::btnBajaActionPerformed);
 
+        btnEliminar.setBackground(new java.awt.Color(255, 51, 51));
         btnEliminar.setText("Eliminar");
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
+        btnAlta.setBackground(new java.awt.Color(153, 255, 153));
         btnAlta.setText("Alta");
         btnAlta.addActionListener(this::btnAltaActionPerformed);
 
@@ -161,61 +248,87 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
 
         lblFecNac.setText("Fec. Nac.:");
 
+        lblMaterias.setText("Materias:");
+
+        tablaMaterias.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane2.setViewportView(tablaMaterias);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                .addGap(0, 0, 0)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnNuevo)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblId)
-                            .addComponent(lblDni)
-                            .addComponent(lblNombre)
-                            .addComponent(lblFecNac))
-                        .addGap(18, 18, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDni)
-                            .addComponent(dcFechaNac, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
-                            .addComponent(txtNombre)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(chkActivo)
-                        .addGap(32, 32, 32)))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnEliminar)
-                    .addComponent(btnNuevo)
-                    .addComponent(btnBuscar)
-                    .addComponent(btnGuardar)
-                    .addComponent(btnAlta)
-                    .addComponent(btnBaja))
-                .addGap(83, 83, 83))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblId)
+                                    .addComponent(lblDni)
+                                    .addComponent(lblNombre)
+                                    .addComponent(lblFecNac))
+                                .addGap(18, 37, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtNombre)
+                                        .addComponent(txtDni)
+                                        .addComponent(dcFechaNac, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(chkActivo)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnBuscar)
+                            .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(92, 92, 92))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnAlta)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnBaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(55, 55, 55))
+                            .addComponent(lblMaterias, javax.swing.GroupLayout.Alignment.LEADING))))
+                .addGap(52, 52, 52))
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAlta, btnBaja, btnBuscar, btnEliminar, btnGuardar, btnNuevo});
-
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {dcFechaNac, txtDni, txtNombre});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAlta, btnBaja, btnNuevo});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(chkActivo)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(39, 39, 39)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(btnEliminar)
                         .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblId)
-                            .addComponent(btnGuardar))
-                        .addGap(16, 16, 16)
+                            .addComponent(lblId))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblDni)
@@ -223,18 +336,25 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNombre)
-                            .addComponent(btnNuevo))
+                            .addComponent(lblNombre))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dcFechaNac, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblFecNac)
-                            .addComponent(btnAlta))))
+                            .addComponent(btnGuardar))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnNuevo)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chkActivo)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAlta)
+                    .addComponent(btnBaja))
+                .addGap(2, 2, 2)
+                .addComponent(lblMaterias, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnBaja)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
-                .addComponent(btnEliminar)
-                .addGap(35, 35, 35))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
 
         pack();
@@ -400,11 +520,14 @@ public class AlumnoVista extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox chkActivo;
     private com.toedter.calendar.JDateChooser dcFechaNac;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblDni;
     private javax.swing.JLabel lblFecNac;
     private javax.swing.JLabel lblId;
+    private javax.swing.JLabel lblMaterias;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JTable tablaAlumnos;
+    private javax.swing.JTable tablaMaterias;
     private javax.swing.JTextField txtDni;
     private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtNombre;

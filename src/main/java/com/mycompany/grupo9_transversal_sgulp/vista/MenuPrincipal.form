@@ -52,11 +52,6 @@
                 <Property name="text" type="java.lang.String" value="Carga de notas y asistencia"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="materiasPorAlumno">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Materias que cursa un alumno"/>
-              </Properties>
-            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuOpciones">
