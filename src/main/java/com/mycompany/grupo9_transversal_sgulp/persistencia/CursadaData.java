@@ -188,19 +188,17 @@ public class CursadaData {
     }
 
     // actualizarNota
-    public void actualizarNta(int idAlumno, int idMateria, int anio, double nota) {
+    public void actualizarNta(int idAlumno, int idMateria, int anio, double nota) throws SQLException {
         String sql = "UPDATE cursada SET nota = ? WHERE idAlumno = ? AND idMateria = ? AND cursa = ?";
-
-        try {
-            PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql);
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setDouble(1, nota);
             ps.setInt(2, idAlumno);
             ps.setInt(3, idMateria);
             ps.setInt(4, anio);
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(CursadaData.class.getName()).log(Level.SEVERE, null, ex);
+            int filas = ps.executeUpdate();
+            if (filas != 1) {
+                throw new SQLException("No se encontró la cursada para guardar la nota.");
+            }
         }
     }
 
