@@ -54,6 +54,12 @@ public class MateriaVista extends javax.swing.JInternalFrame {
         }
     }
 
+    private void mostrarMateria(Materia m) {
+        txtId.setText(String.valueOf(m.getIdMateria()));
+        txtNombre.setText(m.getNombre());
+        chkEstado.setSelected(m.isEstado());
+    }
+
     private void limpiar() {
         txtId.setText("");
         txtNombre.setText("");
@@ -198,41 +204,98 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
+        // Validación del nombre
+        String nombre = txtNombre.getText().trim();
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.");
+            return;
+        }
+        if (nombre.length() > 20) {
+            JOptionPane.showMessageDialog(this, "El nombre no puede superar los 20 caracteres.");
+            return;
+        }
+
+        try {
+            if (txtId.getText().isEmpty()) {
+                Materia nueva = new Materia(nombre, true);
+                materiaData.insertarMateria(nueva);
+                JOptionPane.showMessageDialog(this, "Materia guardada con id " + nueva.getIdMateria());
+            } else {
+                int id = Integer.parseInt(txtId.getText());
+                Materia m = new Materia(id, nombre, chkEstado.isSelected());
+                materiaData.actualizarMateria(m);
+                JOptionPane.showMessageDialog(this, "Materia actualizada.");
+            }
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo guardar: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAltaActionPerformed
-
-    private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnBajaActionPerformed
-
-    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-  if (txtId.getText().isEmpty()) {
+        if (txtId.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
             return;
         }
-        int opcion = JOptionPane.showConfirmDialog(this,
+        try {
+            materiaData.reactivacionLogicaMateria(Integer.parseInt(txtId.getText()));
+            JOptionPane.showMessageDialog(this, "Materia dada de alta.");
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo dar de alta: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnAltaActionPerformed
+
+    private void btnBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBajaActionPerformed
+        if (txtId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
+            return;
+        }
+        try {
+            materiaData.bajaLogicaMateria(Integer.parseInt(txtId.getText()));
+            JOptionPane.showMessageDialog(this, "Materia dada de baja.");
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo dar de baja: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnBajaActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        if (txtId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccioná una materia de la tabla.");
+            return;
+        }
+        int resp = JOptionPane.showConfirmDialog(this,
                 "¿Eliminar definitivamente la materia?", "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (opcion == JOptionPane.YES_OPTION) {
-      try {
-          materiaData.borrarMateria(Integer.parseInt(txtId.getText()),false);
-          limpiar();
-          cargarTabla();
-      } catch (SQLException ex) {
-          System.getLogger(MateriaVista.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-      }
+        if (resp != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            materiaData.borrarMateria(Integer.parseInt(txtId.getText()), false);
+            JOptionPane.showMessageDialog(this, "Materia eliminada.");
+            limpiar();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void tablaMateriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMateriasMouseClicked
         int fila = tablaMaterias.getSelectedRow();
         if (fila >= 0) {
-            txtId.setText(modelo.getValueAt(fila, 0).toString());
-            txtNombre.setText(modelo.getValueAt(fila, 1).toString());
-            chkEstado.setSelected("Activa".equals(modelo.getValueAt(fila, 2)));
+            int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+            Materia m = null;
+            try {
+                m = materiaData.buscarMateria(id);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "No se pudo cargar la materia: " + ex.getMessage());
+            }
+            if (m != null) {
+                mostrarMateria(m);
+            }
         }
     }//GEN-LAST:event_tablaMateriasMouseClicked
 
