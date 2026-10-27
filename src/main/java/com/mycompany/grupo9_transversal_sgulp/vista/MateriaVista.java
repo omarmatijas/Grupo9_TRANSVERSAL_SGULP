@@ -18,7 +18,7 @@ import javax.swing.table.DefaultTableModel;
 public class MateriaVista extends javax.swing.JInternalFrame {
 
     private MateriaData materiaData;
-    private DefaultTableModel modelo;
+    private DefaultTableModel modeloTabla;
 
     public MateriaVista(miConexion conexion) {
         materiaData = new MateriaData(conexion);
@@ -30,20 +30,20 @@ public class MateriaVista extends javax.swing.JInternalFrame {
 
     private void armarTabla() {
         String[] columnas = new String[]{"ID", "Nombre", "Estado"};
-        modelo = new DefaultTableModel(columnas, 0) {
+        modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int fila, int columna) {
                 return false;
             }
         };
-        tablaMaterias.setModel(modelo);
+        tablaMaterias.setModel(modeloTabla);
     }
 
     private void cargarTabla() {
-        modelo.setRowCount(0);
+        modeloTabla.setRowCount(0);
         try {
             for (Materia m : materiaData.listarMaterias()) {
-                modelo.addRow(new Object[]{
+                modeloTabla.addRow(new Object[]{
                     m.getIdMateria(),
                     m.getNombre(),
                     m.isEstado() ? "Activa" : "Inactiva"
@@ -286,7 +286,7 @@ public class MateriaVista extends javax.swing.JInternalFrame {
     private void tablaMateriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMateriasMouseClicked
         int fila = tablaMaterias.getSelectedRow();
         if (fila >= 0) {
-            int id = Integer.parseInt(modelo.getValueAt(fila, 0).toString());
+            int id = Integer.parseInt(modeloTabla.getValueAt(fila, 0).toString());
             Materia m = null;
             try {
                 m = materiaData.buscarMateria(id);

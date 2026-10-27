@@ -28,6 +28,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private miConexion con;
     private AlumnoVista alumnoVista;
     private MateriaVista materiaVista;
+    private InscripcionVista inscripcionVista;
 
     private static final java.awt.Dimension TAMANIO_VENTANA = new java.awt.Dimension(700, 480);
 
@@ -137,6 +138,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         menuInscripciones.setText("Inscripciones");
 
         gestionInscripciones.setText("Gestión de Inscripciones");
+        gestionInscripciones.addActionListener(this::gestionInscripcionesActionPerformed);
         menuInscripciones.add(gestionInscripciones);
 
         cargaNotas.setText("Carga de notas y asistencia");
@@ -190,6 +192,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private void menuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSalirActionPerformed
         System.exit(0);
     }//GEN-LAST:event_menuSalirActionPerformed
+
+    private void gestionInscripcionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gestionInscripcionesActionPerformed
+        if (inscripcionVista == null || inscripcionVista.isClosed()) {
+            inscripcionVista = new InscripcionVista(con);
+        }
+        mostrar(inscripcionVista);
+    }//GEN-LAST:event_gestionInscripcionesActionPerformed
 
     /**
      * @param args the command line arguments
