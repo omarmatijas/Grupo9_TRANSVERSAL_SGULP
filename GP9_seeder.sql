@@ -19,7 +19,7 @@ INSERT INTO `alumno` (`dni`, `nombre`, `fecNac`, `activo`) VALUES
 (34421846, 'Franco Magallanes', '1989-01-02', 1),
 (34877066, 'Jessica Auriol', '1989-10-20', 1),
 (35915707, 'Gonzalo Exequiel Martin Asis', '1991-06-10', 1),
-(30334915, 'Omar Matijas', '1983-07-06', 1),
+(30334915, 'Omar Matijas', '1983-06-07', 1),
 
 (32145678, 'Juan Gabriel Castro', '1986-07-09', 1),
 (34567891, 'Adriana Serquis', '1989-07-21', 1),
