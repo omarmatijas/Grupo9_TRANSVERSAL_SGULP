@@ -71,7 +71,7 @@ public class CursadaData {
     }
     
     public int inscribir(Cursada cursada) throws SQLException {
-        String sql = "INSERT INTO cursada (idAlumno, idMateria, cursa) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO cursada (idAlumno, idMateria, nota, asist, cursa) VALUES (?, ?, 0, 0, ?)";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, cursada.getAlumno().getIdAlumno());
             ps.setInt(2, cursada.getMateria().getIdMateria());
@@ -138,13 +138,13 @@ public class CursadaData {
     public List<Materia> listarMateriasNoCursadas(int idAlumno, int anio) throws SQLException {
         List<Materia> materias = new ArrayList<>();
         String sql = "SELECT * FROM materia WHERE estado = 1 AND idMateria NOT IN " + 
-                "(SELECT idMateria FROM cursada WHERE idAlumno = ? AND cursa = ?)" +
+                "(SELECT idMateria FROM cursada WHERE idAlumno = ? AND cursa = ?) " +
                 "ORDER BY nombre";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idAlumno);
             ps.setInt(2, anio);
             
-            try (ResultSet rs = ps.executeQuery(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     materias.add(new Materia(
                             rs.getInt("idMateria"),
