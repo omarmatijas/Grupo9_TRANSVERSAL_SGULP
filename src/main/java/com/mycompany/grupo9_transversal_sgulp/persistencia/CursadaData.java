@@ -157,38 +157,47 @@ public class CursadaData {
         return materias;
     }
 
-    public List<Alumno> listarAlumnosPorMateria(int idMateria) throws SQLException {
-        List<Alumno> alumnos = new ArrayList<>();
-        String sql = "SELECT * FROM alumno a JOIN cursada c ON c.idAlumno = a.idAlumno "
-                + "AND c.idMateria = ? ORDER BY nombre";
+    public List<Cursada> listarCursadasPorMateria(int idMateria, int anio) throws SQLException {
+        List<Cursada> cursadas = new ArrayList<>();
+        String sql = "SELECT c.idCursada, c.nota, c.asist, c.cursa, "
+                + "a.idAlumno, a.dni, a.nombre, a.fecNac, a.activo, "
+                + "m.idMateria, m.nombre AS nombreMateria, m.estado "
+                + "FROM cursada c "
+                + "JOIN alumno a ON a.idAlumno = c.idAlumno "
+                + "JOIN materia m ON m.idMateria = c.idMateria "
+                + "WHERE c.idMateria = ? AND c.cursa = ? ORDER BY a.nombre";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setInt(1, idMateria);
-
-            try (ResultSet rs = ps.executeQuery(sql)) {
+            ps.setInt(2, anio);
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    alumnos.add(new Alumno(
+                    Alumno alumno = new Alumno(
                             rs.getInt("idAlumno"),
                             rs.getInt("dni"),
                             rs.getString("nombre"),
                             rs.getDate("fecNac"),
                             rs.getBoolean("activo")
+                    );
+                    Materia materia = new Materia(
+                            rs.getInt("idMateria"),
+                            rs.getString("nombreMateria"),
+                            rs.getBoolean("estado")
+                    );
+                    cursadas.add(new Cursada(
+                            rs.getInt("idCursada"),
+                            alumno,
+                            materia,
+                            rs.getFloat("nota"),
+                            rs.getFloat("asist"),
+                            rs.getInt("cursa")
                     ));
                 }
             }
         }
-        return alumnos;
+        return cursadas;
     }
 
-    public void actualizarEstadoAlumno(int idAlumno) throws SQLException {
-        String sql = "UPDATE alumno SET estado = (SELECT COUNT(*) > 0 "
-                + "FROM cursada WHERE idAlumno = ?)";
-        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
-            ps.setInt(1, idAlumno);
-        }
-    }
-
-    // actualizarNota
-    public void actualizarNta(int idAlumno, int idMateria, int anio, double nota) throws SQLException {
+    public void actualizarNota(int idAlumno, int idMateria, int anio, double nota) throws SQLException {
         String sql = "UPDATE cursada SET nota = ? WHERE idAlumno = ? AND idMateria = ? AND cursa = ?";
         try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
             ps.setDouble(1, nota);
@@ -202,7 +211,20 @@ public class CursadaData {
         }
     }
 
-    // marcarAsistencia
+    public void actualizarAsistencia(int idAlumno, int idMateria, int anio, int asist) throws SQLException {
+        String sql = "UPDATE cursada SET asist = ? WHERE idAlumno = ? AND idMateria = ? AND cursa = ?";
+        try (PreparedStatement ps = conexion.buscarConexion().prepareStatement(sql)) {
+            ps.setInt(1, asist);
+            ps.setInt(2, idAlumno);
+            ps.setInt(3, idMateria);
+            ps.setInt(4, anio);
+            int filas = ps.executeUpdate();
+            if (filas != 1) {
+                throw new SQLException("No se encontró la cursada para guardar la asistencia.");
+            }
+        }
+    }
+
     public void marcarAsistencia(int idAlumno, int idMateria, int anio) {
         String sql = "UPDATE cursada SET asist = asist + 1 "
                 + "WHERE idAlumno = ? AND idMateria = ? AND cursa = ? AND asist < ?";
@@ -222,7 +244,6 @@ public class CursadaData {
         }
     }
 
-    // listarCursadasPorAlumno
     public List<Cursada> listarMateriasPorAlumno(int idAlumno) throws SQLException {
         List<Cursada> cursadas = new ArrayList<>();
         String sql = "SELECT c.idCursada, c.nota, c.asist, c.cursa, "

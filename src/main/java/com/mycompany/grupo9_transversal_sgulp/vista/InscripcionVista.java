@@ -88,6 +88,7 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
         materiasEnTabla.clear();
         cursadasEnTabla.clear();
         txtNota.setText("");
+        txtAsistencia.setText("");
         actualizarBotones();
         Alumno alumno = (Alumno) cboAlumno.getSelectedItem();
         if (alumno == null) {
@@ -133,6 +134,7 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
         chkTodosLosAnios.setEnabled(inscriptas);
         spAnio.setEnabled(!(inscriptas && chkTodosLosAnios.isSelected()));
         txtNota.setEnabled(inscriptas);
+        txtAsistencia.setEnabled(inscriptas);
         btnGuardar.setEnabled(inscriptas);
     }
 
@@ -149,6 +151,16 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
             return "";
         }
         return String.format(Locale.US, "%.1f", nota);
+    }
+
+    private static String textoClases(float asist) {
+        int clases = Math.round(asist);
+        if (clases < 0) {
+            clases = 0;
+        } else if (clases > CLASES_TOTALES) {
+            clases = CLASES_TOTALES;
+        }
+        return String.valueOf(clases);
     }
 
     private static String textoAsistencia(float asist) {
@@ -223,6 +235,8 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
         chkTodosLosAnios = new javax.swing.JCheckBox();
         lblNota = new javax.swing.JLabel();
         txtNota = new javax.swing.JTextField();
+        lblAsistencia = new javax.swing.JLabel();
+        txtAsistencia = new javax.swing.JTextField();
         btnGuardar = new javax.swing.JButton();
 
         setClosable(true);
@@ -292,6 +306,10 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
 
         txtNota.setEditable(true);
 
+        lblAsistencia.setText("Asistencia:");
+
+        txtAsistencia.setEditable(true);
+
         btnGuardar.setBackground(new java.awt.Color(153, 204, 255));
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
@@ -334,12 +352,17 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
                             .addComponent(btnAnular))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnInscribir)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblNota)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblNota)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblAsistencia)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtAsistencia, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap(93, Short.MAX_VALUE))
         );
 
@@ -374,12 +397,16 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnInscribir)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblNota)
-                            .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblAsistencia)
+                            .addComponent(txtAsistencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnGuardar))
-                        .addGap(71, 71, 71)
+                        .addGap(48, 48, 48)
                         .addComponent(btnAnular))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap(42, Short.MAX_VALUE))
@@ -470,9 +497,11 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
         int fila = tablaMaterias.getSelectedRow();
         if (fila < 0 || fila >= cursadasEnTabla.size()) {
             txtNota.setText("");
+            txtAsistencia.setText("");
             return;
         }
         txtNota.setText(textoNota(cursadasEnTabla.get(fila).getNota()));
+        txtAsistencia.setText(textoClases(cursadasEnTabla.get(fila).getAsist()));
     }//GEN-LAST:event_tablaMateriasMouseClicked
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
@@ -497,6 +526,10 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "La nota debe estar entre 0 y 10.");
             return;
         }
+        Integer asist = leerAsistencia();
+        if (asist == null) {
+            return;
+        }
         Cursada cursada = cursadasEnTabla.get(fila);
         Alumno alumno = (Alumno) cboAlumno.getSelectedItem();
         if (alumno == null) {
@@ -504,10 +537,11 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
             return;
         }
         try {
-            cursadaData.actualizarNta(alumno.getIdAlumno(), cursada.getMateria().getIdMateria(), cursada.getCursa(), nota);
-            JOptionPane.showMessageDialog(this, "Nota guardada.");
+            cursadaData.actualizarNota(alumno.getIdAlumno(), cursada.getMateria().getIdMateria(), cursada.getCursa(), nota);
+            cursadaData.actualizarAsistencia(alumno.getIdAlumno(), cursada.getMateria().getIdMateria(), cursada.getCursa(), asist);
+            JOptionPane.showMessageDialog(this, "Nota y asistencia guardadas.");
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar la nota: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "No se pudo guardar: " + ex.getMessage());
             return;
         }
         int idCursada = cursada.getIdCursada();
@@ -516,10 +550,29 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
             if (cursadasEnTabla.get(i).getIdCursada() == idCursada) {
                 tablaMaterias.setRowSelectionInterval(i, i);
                 txtNota.setText(textoNota(nota));
+                txtAsistencia.setText(String.valueOf(asist));
                 return;
             }
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private Integer leerAsistencia() {
+        String texto = txtAsistencia.getText().trim();
+        if (texto.isEmpty()) {
+            return 0;
+        }
+        try {
+            int clases = Integer.parseInt(texto);
+            if (clases < 0 || clases > CLASES_TOTALES) {
+                JOptionPane.showMessageDialog(this, "La asistencia debe estar entre 0 y 30.");
+                return null;
+            }
+            return clases;
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "La asistencia debe ser un número entero entre 0 y 30.");
+            return null;
+        }
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -530,6 +583,7 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox chkTodosLosAnios;
     private javax.swing.ButtonGroup grupoMaterias;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblAsistencia;
     private javax.swing.JLabel lblAlumno;
     private javax.swing.JLabel lblAnio;
     private javax.swing.JLabel lblDni;
@@ -539,6 +593,7 @@ public class InscripcionVista extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton rbNoInscriptas;
     private javax.swing.JSpinner spAnio;
     private javax.swing.JTable tablaMaterias;
+    private javax.swing.JTextField txtAsistencia;
     private javax.swing.JTextField txtDni;
     private javax.swing.JTextField txtFiltroMateria;
     private javax.swing.JTextField txtNota;

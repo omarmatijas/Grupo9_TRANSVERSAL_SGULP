@@ -18,7 +18,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     
     private static final String HOST = "localhost";
-    private static final String PORT = "3306";
+    private static final String PORT = "3307";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
     private static final String PASSWORD = "";
@@ -27,6 +27,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private AlumnoVista alumnoVista;
     private MateriaVista materiaVista;
     private InscripcionVista inscripcionVista;
+    private CursadaPorMateria cursadaPorMateria;
 
     private static final java.awt.Dimension TAMANIO_VENTANA = new java.awt.Dimension(700, 480);
 
@@ -185,11 +186,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
         menuInscripciones.setText("Cursada");
 
-        gestionInscripciones.setText("Gestión de Cursada");
+        gestionInscripciones.setText("Gestión por alumno");
         gestionInscripciones.addActionListener(this::gestionInscripcionesActionPerformed);
         menuInscripciones.add(gestionInscripciones);
 
-        cargaNotas.setText("Carga de notas y asistencia");
+        cargaNotas.setText("Gestión por materia");
+        cargaNotas.addActionListener(this::cargaNotasActionPerformed);
         menuInscripciones.add(cargaNotas);
 
         menu.add(menuInscripciones);
@@ -250,6 +252,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
         }
         mostrar(inscripcionVista);
     }//GEN-LAST:event_gestionInscripcionesActionPerformed
+
+    private void cargaNotasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargaNotasActionPerformed
+        if (cursadaPorMateria == null || cursadaPorMateria.isClosed()) {
+            cursadaPorMateria = new CursadaPorMateria(con);
+        }
+        mostrar(cursadaPorMateria);
+    }//GEN-LAST:event_cargaNotasActionPerformed
 
     /**
      * @param args the command line arguments

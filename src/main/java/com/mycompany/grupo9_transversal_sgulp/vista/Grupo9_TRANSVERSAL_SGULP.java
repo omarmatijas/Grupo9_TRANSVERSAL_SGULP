@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class Grupo9_TRANSVERSAL_SGULP {
 
     private static final String HOST = "localhost";
-    private static final String PORT = "3306";
+    private static final String PORT = "3307";
     private static final String DB_NAME = "grupo9_universidad";
     private static final String USER = "root";
     private static final String PASSWORD = "";
